@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* custom fonts */
+:root {
+  --olive: #7a8b52; /* accent */
+  --olive-2: #b2aa7f;
+  --text-dark: #2c2a28;
+}
+
+@layer base {
+  body {
+    @apply bg-[#f8f7f4] text-[#2c2a28] antialiased;
+    font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  .font-playfair {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+/* small helper */
+.container {
+  max-width: 1200px;
+}
