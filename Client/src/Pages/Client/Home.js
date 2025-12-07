@@ -1,0 +1,351 @@
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProductHoatDong, fetchProductWithNewDate } from "../../Actions/ProductActions";
+import { Link, useNavigate } from "react-router-dom";
+import ImageGallery from "../../Components/Client/ImageGallery";
+import unidecode from "unidecode";
+
+function Home() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate(); // Add useNavigate hook
+  const productState = useSelector((state) => state.product);
+
+  useEffect(() => {
+    dispatch(fetchProductWithNewDate());
+  }, [dispatch]);
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(price);
+  };
+
+  const products = productState.product.slice(0, 8);
+
+  // Function to create slug from product name
+  const createSlug = (name) => {
+    return unidecode(name)
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-+/, "")
+      .replace(/-+$/, "");
+  };
+
+  // Function to handle click and navigate to product detail page
+  const handleProductClick = (name) => {
+    const slug = createSlug(name);
+    navigate(`/product-detail/${slug}.html`);
+  };
+
+  return (
+    <div>
+      <div 
+        className="container-fluid p-0 py-5 bg-dark hero-header mb-5"
+        style={{
+          backgroundImage: `url(${ImageGallery.mayPhotocopyBanner})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          transform: 'none',
+          animation: 'none',
+          transition: 'none',
+          position: 'relative'
+        }}
+      >
+        <div 
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 1
+          }}
+        ></div>
+        <div className="container my-5 py-5" style={{ position: 'relative', zIndex: 2 }}>
+          <div className="row align-items-center g-5">
+            <div className="col-lg-6 text-center text-lg-start">
+              <h1 className="display-6 text-white animated slideInLeft">
+                NHỮNG SẢN PHẨM TỐT NHẤT SẴN SÀN PHỤC VỤ BẠN
+              </h1>
+              <p className="text-white animated slideInLeft mb-4 pb-2">
+                Với những trang thiết bị văn phòng hiện đại và đội ngũ tư vấn
+                chuyên nghiệp, chúng tôi cam kết mang đến cho bạn trải nghiệm
+                mua sắm tuyệt vời nhất.
+              </p>
+              <Link
+                to="/booking"
+                className="btn btn-primary py-sm-3 px-sm-5 me-3 animated slideInLeft"
+              >
+                Đặt hàng ngay
+              </Link>
+            </div>
+            <div className="col-lg-6 text-center text-lg-end overflow-hidden">
+              <img 
+                className="img-fluid" 
+                src={ImageGallery.mayin01} 
+                alt="Hero"
+                style={{
+                  transform: 'none',
+                  animation: 'none',
+                  transition: 'none'
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="container-xxl py-5">
+        <div className="container">
+          <div className="row g-4">
+            <div
+              className="col-lg-3 col-sm-6 wow fadeInUp"
+              data-wow-delay="0.1s"
+            >
+              <div className="service-item rounded pt-3">
+                <div className="p-4">
+                  <i className="fa fa-3x fa-award text-primary mb-4"></i>
+                  <h5>Sản phẩm hàng đầu </h5>
+                  <p>
+                    Sản phẩm của chúng tôi với{" "}
+                    <strong>hơn 5 năm được lưu hành trên thị trường</strong>, sẽ luôn mang đến cho
+                    quý khách những thiết bị hoàn hảo và chất lượng.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div
+              className="col-lg-3 col-sm-6 wow fadeInUp"
+              data-wow-delay="0.3s"
+            >
+              <div className="service-item rounded pt-3">
+                <div className="p-4">
+                  <i className="fa fa-3x fa-print text-primary mb-4"></i>
+                  <h5>Thiết bị tốt nhất</h5>
+                  <p>
+                    Mỗi thiết bị tại công ty đều được nhập khẩu từ những{" "}
+                    <strong>nhãn hàng uy tín và có tiếng</strong>, đảm bảo chất lượng.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div
+              className="col-lg-3 col-sm-6 wow fadeInUp"
+              data-wow-delay="0.5s"
+            >
+              <div className="service-item rounded pt-3">
+                <div className="p-4">
+                  <i className="fa fa-3x fa-shopping-cart text-primary mb-4"></i>
+                  <h5>Đặt hàng dễ dàng, nhanh chóng</h5>
+                  <p>
+                    Đặt hàng <strong>dễ dàng chỉ với vài cú click</strong>. Sản phẩm
+                     sẽ nhanh chóng được vận chuyển đến tận nơi cho bạn.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div
+              className="col-lg-3 col-sm-6 wow fadeInUp"
+              data-wow-delay="0.7s"
+            >
+              <div className="service-item rounded pt-3">
+                <div className="p-4">
+                  <i className="fa fa-3x fa-headset text-primary mb-4"></i>
+                  <h5>Phục vụ tận tình, xuyên suốt 24/7</h5>
+                  <p>
+                    Chúng tôi luôn sẵn sàng phục vụ quý khách
+                    <strong> 24/7</strong>. Liên hệ ngay để được tư vấn dịch vụ
+                    sản phẩm và đặt hàng.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="container-xxl py-5">
+        <div className="container">
+          <div className="row g-5 align-items-center">
+            <div className="col-lg-6">
+              <div className="row g-3">
+                <div className="col-6 text-start">
+                  <img
+                    className="img-fluid rounded w-100 wow zoomIn"
+                    data-wow-delay="0.1s"
+                    src={ImageGallery.mayin01}
+                  />
+                </div>
+                <div className="col-6 text-start">
+                  <img
+                    className="img-fluid rounded w-75 wow zoomIn"
+                    data-wow-delay="0.3s"
+                    src={ImageGallery.mayin02}
+                    style={{ marginBottom: "25%" }}
+                  />
+                </div>
+                <div className="col-6 text-end">
+                  <img
+                    className="img-fluid rounded w-75 wow zoomIn"
+                    data-wow-delay="0.5s"
+                    src={ImageGallery.mayscan01}
+                  />
+                </div>
+                <div className="col-6 text-end">
+                  <img
+                    className="img-fluid rounded w-100 wow zoomIn"
+                    data-wow-delay="0.7s"
+                    src={ImageGallery.mayphoto01}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="col-lg-6">
+              <h5 className="section-title ff-secondary text-start text-primary fw-normal">
+                Giới thiệu
+              </h5>
+              <h1 className="mb-4">CHÀO MỪNG ĐẾN VỚI</h1>
+              <h1 className="mb-4">
+                <img
+                  src="../../Assets/Client/Images/logo-ky-thuat.png"
+                  width={50}
+                  style={{ marginBottom: "20px" }}
+                ></img>{" "}
+                <span className="ff-secondary fw-normal text-start text-primary m-0">
+                  Công ty TNHH Tin Việt
+                </span>
+              </h1>
+              <p className="mb-4">
+                Công ty Tin Việt - địa chỉ tin cậy cho mọi nhu cầu về thiết bị
+              </p>
+              <p className="mb-4">
+                Với hơn 5 năm kinh nghiệm trong lĩnh vực bán trang thiết bị văn phòng, Tin Việt tự
+                hào mang đến cho thực khách những thiết bị chất lượng. Các sản phẩm của chúng tôi luôn được kiểm duyệt. 
+                Đảm bảo mang đến sự hài lòng và trải nghiệm tốt nhất cho khách hàng.
+              </p>
+              <div className="row g-4 mb-4">
+                <div className="col-sm-6">
+                  <div className="d-flex align-items-center border-start border-5 border-primary px-3">
+                    <h1
+                      className="flex-shrink-0 display-5 text-primary mb-0"
+                      data-toggle="counter-up"
+                    >
+                      {">"}5
+                    </h1>
+                    <div className="ps-4">
+                      <p className="mb-0">Năm</p>
+                      <h6 className="text-uppercase mb-0">Kinh Nghiệm</h6>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-sm-6">
+                  <div className="d-flex align-items-center border-start border-5 border-primary px-3">
+                    <h1
+                      className="flex-shrink-0 display-5 text-primary mb-0"
+                      data-toggle="counter-up"
+                    >
+                      1000
+                    </h1>
+                    <div className="ps-4">
+                      <p className="mb-0">Sản phẩm</p>
+                      <h6 className="text-uppercase mb-0">
+                         Được Bán
+                      </h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <Link className="btn btn-primary py-3 px-5 mt-2" to="/about">
+                Xem thêm tại đây
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="container-xxl py-5">
+        <div className="container">
+          <div className="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h5 className="section-title ff-secondary text-center text-primary fw-normal">
+              Công ty Tin Việt
+            </h5>
+            <h1 className="mb-5">Sản phẩm mới</h1>
+          </div>
+          <div
+            className="tab-class text-center wow fadeInUp"
+            data-wow-delay="0.1s"
+          >
+            <div className="tab-content">
+              <div id="tab-1" className="tab-pane fade show p-0 active">
+                <div className="row" style={{ rowGap: "20px" }}>
+                  {products.map((product) => (
+                    <div className="col-lg-6" key={product.id}>
+                      <div
+                        className="d-flex align-items-center"
+                        onClick={() => handleProductClick(product.name)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <img
+                          className="flex-shrink-0 img-fluid rounded"
+                          src={product.image}
+                          alt={product.name}
+                          style={{
+                            width: "150px",
+                            height: "150px",
+                            objectFit: "cover",
+                            borderRadius: "10px",
+                          }}
+                        />
+                        {product.sale_price > 0 ? (
+                          <div className="w-100 d-flex flex-column text-start ps-4">
+                            <h5 className="d-flex justify-content-between border-bottom pb-2">
+                              <span>{product.name}</span>
+                              <span
+                                className="text-primary"
+                                style={{ fontSize: "1rem" }}
+                              >
+                                {formatPrice(
+                                  product.price - product.sale_price
+                                )}
+                              </span>
+                            </h5>
+                            <div className="d-flex justify-content-end">
+                              <span
+                                className="text-secondary text-decoration-line-through"
+                                style={{ fontSize: "0.85rem" }}
+                              >
+                                {formatPrice(product.price)}
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="w-100 d-flex flex-column text-start ps-4">
+                            <h5 className="d-flex justify-content-between border-bottom pb-2">
+                              <span>{product.name}</span>
+                              <span
+                                className="text-primary"
+                                style={{ fontSize: "1rem" }}
+                              >
+                                {formatPrice(product.price)}
+                              </span>
+                            </h5>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Home;
