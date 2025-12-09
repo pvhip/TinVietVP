@@ -477,7 +477,7 @@ const upsertProducts = async (reservationId, products) => {
     return;
   }
 
-  console.log("ID đặt chỗ:", reservationId);
+  console.log("ID đặt hàng:", reservationId);
   console.log("Danh sách sản phẩm:", products);
 
   try {
@@ -576,7 +576,7 @@ const upsertProducts = async (reservationId, products) => {
   }
 };
 
-// Route PATCH để cập nhật đặt chỗ
+// Route PATCH để cập nhật đặt hàng
 router.patch("/reservation_ad/:id", async (req, res) => {
   const reservationId = req.params.id;
   const {
@@ -592,7 +592,7 @@ router.patch("/reservation_ad/:id", async (req, res) => {
   } = req.body;
 
   try {
-    // Cập nhật thông tin đặt chỗ
+    // Cập nhật thông tin đặt hàng
     const updateReservationQuery = `
       UPDATE reservations
       SET fullname = ?, tel = ?, email = ?, reservation_date = ?,
@@ -624,7 +624,7 @@ router.patch("/reservation_ad/:id", async (req, res) => {
     const tableResults = await connection.query(getTableIdQuery, [reservationId]);
 
     if (!tableResults.length) {
-      return res.status(404).json({ message: "Không tìm thấy thông tin hàng cho đặt chỗ này" });
+      return res.status(404).json({ message: "Không tìm thấy thông tin hàng cho đặt hàng này" });
     }
 
     const tableId = tableResults[0].table_id;
@@ -634,9 +634,9 @@ router.patch("/reservation_ad/:id", async (req, res) => {
     await connection.query(updateTableStatusQuery, [tableStatus, tableId]);
 
     // Phản hồi thành công
-    res.status(200).json({ message: "Cập nhật thông tin đặt chỗ và trạng thái hàng thành công" });
+    res.status(200).json({ message: "Cập nhật thông tin đặt hàng và trạng thái hàng thành công" });
   } catch (error) {
-    console.error("Lỗi khi cập nhật đặt chỗ:", error);
+    console.error("Lỗi khi cập nhật đặt hàng:", error);
     res.status(500).json({ message: "Có lỗi xảy ra", error: error.message });
   }
 });

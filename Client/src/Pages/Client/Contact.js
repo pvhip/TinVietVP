@@ -5,6 +5,7 @@ import { addNewContact } from "../../Actions/ContactActions";
 import Spinner from "../../Components/Client/Spinner";
 import { DangerAlert, SuccessAlert } from "../../Components/Alert/Alert";
 import { Link } from "react-router-dom";
+import mayPhotocopyBanner from "../../Assets/Client/Images/may_photocopy_banner.jpg";
 
 
 export default function Contact() {
@@ -37,8 +38,28 @@ export default function Contact() {
         <Spinner />
       ) : (
         <>
-          <div className="container-fluid p-0 py-5 bg-dark hero-header mb-5">
-            <div className="container text-center my-5 pt-5 pb-4">
+          <div 
+            className="container-fluid p-0 py-5 bg-dark hero-header mb-5"
+            style={{
+              backgroundImage: `url(${mayPhotocopyBanner})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              position: 'relative'
+            }}
+          >
+            <div 
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                zIndex: 1
+              }}
+            ></div>
+            <div className="container text-center my-5 pt-5 pb-4" style={{ position: 'relative', zIndex: 2 }}>
               <h1 className="display-3 text-white mb-3 animated slideInDown">
                 Liên hệ với chúng tôi
               </h1>
@@ -71,7 +92,7 @@ export default function Contact() {
                   <div className="row gy-4">
                     <div className="col-md-4">
                       <h5 className="section-title ff-secondary fw-normal text-start text-primary">
-                        Đặt chỗ
+                        đặt hàng
                       </h5>
                       <p>
                         <i className="fa fa-envelope-open text-primary me-2"></i>
@@ -99,15 +120,7 @@ export default function Contact() {
                   </div>
                 </div>
                 <div className="col-md-6 wow fadeIn" data-wow-delay="0.1s">
-                  <iframe
-                    className="position-relative rounded w-100 h-100"
-                    src="https://www.google.com/maps/d/u/0/embed?mid=1bjw9hlxO6tvUNqAKJSFLdJAHHK_dmlY&ehbc=2E312F&noprof=1"
-                    frameBorder="0"
-                    style={{ minHeight: "350px", border: 0 }}
-                    allowFullScreen=""
-                    aria-hidden="false"
-                    tabIndex="0"
-                  ></iframe>
+                <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1sBCuWY2wUjQ1rum3ZF-PhMLDxCAl1Ao&ehbc=2E312F" width="640" height="480"></iframe>
                 </div>
                 <div className="col-md-6">
                   <div className="wow fadeInUp" data-wow-delay="0.2s">

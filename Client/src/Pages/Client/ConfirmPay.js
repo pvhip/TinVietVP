@@ -72,7 +72,7 @@ export default function Booking() {
           <div className="col-12 text-center mb-5 mt-5" ref={confirmRef}>
             <div className="success-message">
               <img
-                src="../../Assets/Client/Images/logo-ky-thuat.png"
+                src="../../Assets/Client/Images/logo.png"
                 style={{ width: "100px" }}
                 alt="Success"
                 className="mb-4"

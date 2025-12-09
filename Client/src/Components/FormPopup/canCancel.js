@@ -10,10 +10,10 @@ export const canCancelReservation = (reservationDate) => {
   // Chuyển thời gian hiện tại sang múi giờ Việt Nam
   const zonedNow = toZonedTime(now, timeZone);
 
-  // Chuyển thời gian đặt chỗ từ UTC sang múi giờ Việt Nam
+  // Chuyển thời gian đặt hàng từ UTC sang múi giờ Việt Nam
   const zonedReservationDate = toZonedTime(new Date(reservationDate), timeZone);
 
-  // Tính sự khác biệt giờ giữa thời gian đặt chỗ và thời gian hiện tại
+  // Tính sự khác biệt giờ giữa thời gian đặt hàng và thời gian hiện tại
   const hoursDifference = differenceInHours(zonedReservationDate, zonedNow);
 
   // console.log("UTC Reservation Date:", reservationDate);

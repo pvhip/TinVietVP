@@ -399,7 +399,7 @@ function ChatPopup() {
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <Avatar
                     sx={{ marginRight: "10px" }}
-                    src="../../Assets/Client/Images/logo-ky-thuat.png"
+                    src="../../Assets/Client/Images/logo.png"
                   />
 
                   <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -503,7 +503,7 @@ function ChatPopup() {
                       >
                         <Avatar
                           sx={{ marginRight: "10px", mr: 1 }}
-                          src="../../Assets/Client/Images/logo-ky-thuat.png"
+                          src="../../Assets/Client/Images/logo.png"
                         />
                         <Typography
                           variant="body1"

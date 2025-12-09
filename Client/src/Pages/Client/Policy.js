@@ -24,7 +24,7 @@ function Policy() {
                             <h3>1. Điền thông tin</h3>
                             <p>Khách hàng chọn vào nút đặt hàng trên giao diện chính.</p>
                             <p>Điền đầy đủ các thông tin cơ bản để tiện trong quá trình đặt hàng như họ tên, số điện thoại, ngày đặt hàng, số người ăn,... Khi điền đầy đủ thông tin thì ấn vào nút "Tiếp theo" đển chuyển đến trang chọn sản phẩm khi có nhu cầu</p>
-                            <p>Khi bạn chỉ muốn điền thông tin để đặt chỗ thì ấn vào nút "Hoàn thành đặt chỗ" để hoàn thành việc lưu thông tin</p>
+                            <p>Khi bạn chỉ muốn điền thông tin để đặt hàng thì ấn vào nút "Hoàn thành đặt hàng" để hoàn thành việc lưu thông tin</p>
                         </div>
                         <div className="mb-4">
                             <h3>2. Chọn sản phẩm</h3>

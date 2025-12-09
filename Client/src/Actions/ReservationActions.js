@@ -29,7 +29,7 @@ export const addNewReservation = (reservationData) => {
         try {
             const response = await http.post(`${API_ENDPOINT}${API_DATA.reservations}`, reservationData);
             dispatch(fetchReservationSuccess(response.data));
-            return response.data; // Trả về dữ liệu đơn đặt chỗ
+            return response.data; // Trả về dữ liệu đơn đặt hàng
         } catch (error) {
             dispatch(fetchReservationFailure(error.message));
             throw new Error(error.message); // Ném lỗi để bắt trong component

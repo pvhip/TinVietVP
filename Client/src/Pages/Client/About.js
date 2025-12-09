@@ -1,14 +1,40 @@
 import React from 'react'
-
-import ImageGallery from '../../Components/Client/ImageGallery';
 import { Link } from 'react-router-dom';
+import mayPhotocopyBanner from '../../Assets/Client/Images/may_photocopy_banner.jpg';
+import mayin01 from '../../Assets/Client/Images/mayin_01.jpg';
+import mayin02 from '../../Assets/Client/Images/mayin_02.jpg';
+import mayphoto01 from '../../Assets/Client/Images/mayphoto_01.jpg';
+import mayhuygiay04 from '../../Assets/Client/Images/mayhuygiay_04.jpg';
+import mayphotocopy03 from '../../Assets/Client/Images/mayphotocopy_03.png';
+import maytinh03 from '../../Assets/Client/Images/maytinh_03.jpg';
+import ssd01 from '../../Assets/Client/Images/SSD_01.jpg';
 
 export default function About() {
     return (
         <div>
 
-            <div className="container-fluid p-0 py-5 bg-dark hero-header mb-5">
-                <div className="container text-center my-5 pt-5 pb-4">
+            <div 
+                className="container-fluid p-0 py-5 bg-dark hero-header mb-5"
+                style={{
+                    backgroundImage: `url(${mayPhotocopyBanner})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                    position: 'relative'
+                }}
+            >
+                <div 
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        zIndex: 1
+                    }}
+                ></div>
+                <div className="container text-center my-5 pt-5 pb-4" style={{ position: 'relative', zIndex: 2 }}>
                     <h1 className="display-3 text-white mb-3 animated slideInDown">Về Chúng Tôi</h1>
                     <nav aria-label="breadcrumb">
                         <ol className="breadcrumb justify-content-center text-uppercase">
@@ -27,17 +53,17 @@ export default function About() {
                         <div className="col-lg-6">
                             <div className="row g-3">
                                 <div className="col-6 text-start">
-                                    <img className="img-fluid rounded w-100 wow zoomIn" data-wow-delay="0.1s" src={ImageGallery.about1} />
+                                    <img className="img-fluid rounded w-100 wow zoomIn" data-wow-delay="0.1s" src={mayin01} alt="Máy in" />
                                 </div>
                                 <div className="col-6 text-start">
-                                    <img className="img-fluid rounded w-75 wow zoomIn" data-wow-delay="0.3s" src={ImageGallery.about2}
-                                        style={{ marginBottom: '25%' }} />
+                                    <img className="img-fluid rounded w-75 wow zoomIn" data-wow-delay="0.3s" src={mayphoto01}
+                                        style={{ marginBottom: '25%' }} alt="Máy photocopy" />
                                 </div>
                                 <div className="col-6 text-end">
-                                    <img className="img-fluid rounded w-75 wow zoomIn" data-wow-delay="0.5s" src={ImageGallery.about3} />
+                                    <img className="img-fluid rounded w-75 wow zoomIn" data-wow-delay="0.5s" src={mayhuygiay04} alt="Máy hủy giấy" />
                                 </div>
                                 <div className="col-6 text-end">
-                                    <img className="img-fluid rounded w-100 wow zoomIn" data-wow-delay="0.7s" src={ImageGallery.about4} />
+                                    <img className="img-fluid rounded w-100 wow zoomIn" data-wow-delay="0.7s" src={maytinh03} alt="Máy tính" />
                                 </div>
                             </div>
                         </div>
@@ -83,7 +109,7 @@ export default function About() {
                         <div className="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
                             <div className="team-item text-center rounded overflow-hidden">
                                 <div className="rounded-circle overflow-hidden m-4">
-                                    <img className="img-fluid" src={ImageGallery.team1} alt="" />
+                                    <img className="img-fluid" src={mayphotocopy03} alt="Máy photocopy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 </div>
                                 <h5 className="mb-0">Máy photocopy</h5>
                                 <small>Sản phẩm nổi bật</small>
@@ -97,7 +123,7 @@ export default function About() {
                         <div className="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
                             <div className="team-item text-center rounded overflow-hidden">
                                 <div className="rounded-circle overflow-hidden m-4">
-                                    <img className="img-fluid" src={ImageGallery.team2} alt="" />
+                                    <img className="img-fluid" src={mayin02} alt="Máy in" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 </div>
                                 <h5 className="mb-0">Máy in</h5>
                                 <small>Sản phẩm bán chạy</small>
@@ -111,7 +137,7 @@ export default function About() {
                         <div className="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
                             <div className="team-item text-center rounded overflow-hidden">
                                 <div className="rounded-circle overflow-hidden m-4">
-                                    <img className="img-fluid" src={ImageGallery.team3} alt="" />
+                                    <img className="img-fluid" src={mayhuygiay04} alt="Máy hủy giấy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 </div>
                                 <h5 className="mb-0">Máy hủy giấy</h5>
                                 <small>Sản phẩm</small>
@@ -125,9 +151,9 @@ export default function About() {
                         <div className="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
                             <div className="team-item text-center rounded overflow-hidden">
                                 <div className="rounded-circle overflow-hidden m-4">
-                                    <img className="img-fluid" src={ImageGallery.team4} alt="" />
+                                    <img className="img-fluid" src={ssd01} alt="Linh kiện" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 </div>
-                                <h5 className="mb-0">Máy tính hàng</h5>
+                                <h5 className="mb-0">Linh kiện máy tính</h5>
                                 <small>Sản phẩm</small>
                                 <div className="d-flex justify-content-center mt-3">
                                     <a className="btn btn-square btn-primary mx-1" href=""><i className="fab fa-facebook-f"></i></a>

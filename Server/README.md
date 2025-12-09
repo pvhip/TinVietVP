@@ -1,5 +1,3 @@
-# Huong-Sen-Restaurant-ADTN-ServerNode
+# TinVietVP
 
-# Tai khoan admin
 
--    admin@gmail.com - Admin@123

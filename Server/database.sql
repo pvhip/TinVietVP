@@ -1,12 +1,14 @@
 DROP DATABASE IF EXISTS tinvietvp;
 
-
-
 CREATE DATABASE tinvietvp CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 USE tinvietvp;
 
 SET NAMES utf8mb4;
+
+
+
+
 
 CREATE TABLE users (
 
@@ -30,6 +32,10 @@ CREATE TABLE users (
 
 ) ENGINE=InnoDB;
 
+
+
+
+
 CREATE TABLE user_sessions (
 
   id          BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -52,6 +58,10 @@ CREATE TABLE user_sessions (
 
 ) ENGINE=InnoDB;
 
+
+
+
+
 CREATE TABLE password_resets (
 
   id          BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -69,6 +79,10 @@ CREATE TABLE password_resets (
   CONSTRAINT fk_pr_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 
 ) ENGINE=InnoDB;
+
+
+
+
 
 CREATE TABLE addresses (
 
@@ -98,6 +112,10 @@ CREATE TABLE addresses (
 
 ) ENGINE=InnoDB;
 
+
+
+
+
 CREATE TABLE categories (
 
   id        INT AUTO_INCREMENT PRIMARY KEY,
@@ -111,6 +129,10 @@ CREATE TABLE categories (
   CONSTRAINT fk_cat_parent FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL
 
 ) ENGINE=InnoDB;
+
+
+
+
 
 CREATE TABLE products (
 
@@ -140,6 +162,10 @@ CREATE TABLE products (
 
 ) ENGINE=InnoDB;
 
+
+
+
+
 CREATE TABLE product_categories (
 
   product_id INT NOT NULL,
@@ -154,6 +180,10 @@ CREATE TABLE product_categories (
 
 ) ENGINE=InnoDB;
 
+
+
+
+
 CREATE TABLE product_images (
 
   id          INT AUTO_INCREMENT PRIMARY KEY,
@@ -167,6 +197,10 @@ CREATE TABLE product_images (
   CONSTRAINT fk_pimg_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 
 ) ENGINE=InnoDB;
+
+
+
+
 
 CREATE TABLE product_specs (
 
@@ -183,6 +217,10 @@ CREATE TABLE product_specs (
   KEY idx_ps_key (spec_key)
 
 ) ENGINE=InnoDB;
+
+
+
+
 
 CREATE TABLE carts (
 
@@ -204,6 +242,10 @@ CREATE TABLE carts (
 
 ) ENGINE=InnoDB;
 
+
+
+
+
 CREATE TABLE cart_items (
 
   cart_id       BIGINT NOT NULL,
@@ -221,6 +263,10 @@ CREATE TABLE cart_items (
   CONSTRAINT fk_ci_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT
 
 ) ENGINE=InnoDB;
+
+
+
+
 
 CREATE TABLE orders (
 
@@ -254,6 +300,10 @@ CREATE TABLE orders (
 
 ) ENGINE=InnoDB;
 
+
+
+
+
 CREATE TABLE order_items (
 
   order_id     BIGINT NOT NULL,
@@ -273,6 +323,10 @@ CREATE TABLE order_items (
   CONSTRAINT fk_oi_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT
 
 ) ENGINE=InnoDB;
+
+
+
+
 
 CREATE TABLE rentals (
 
@@ -296,6 +350,10 @@ CREATE TABLE rentals (
 
 ) ENGINE=InnoDB;
 
+
+
+
+
 CREATE TABLE payments (
 
   id        BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -318,6 +376,10 @@ CREATE TABLE payments (
 
 ) ENGINE=InnoDB;
 
+
+
+
+
 CREATE TABLE audit_logs (
 
   id        BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -338,37 +400,111 @@ CREATE TABLE audit_logs (
 
 ) ENGINE=InnoDB;
 
+
+
+
+
 INSERT INTO users(full_name, email, phone, password_hash, role) VALUES
 
-('Quản trị viên', 'admin@tinvietvp.vn', '0901234567', '$2y$10$REPLACE_WITH_BCRYPT', 'admin'),
+('Quản trị viên', 'admin@tinvietvp.vn', '0901234567', '$2b$10$tLiaA3Tfpjc4dqMMwFuf2u7oh/I1zFXdJ74agpoyiPS7QjJpNgDVi', 'admin'),
 
-('Nguyễn An',     'an@example.com',    '0901112222', '$2y$10$REPLACE_WITH_BCRYPT', 'customer');
+('Quản trị viên', 'admin@tinviet.com', '0901234567', '$2b$10$tLiaA3Tfpjc4dqMMwFuf2u7oh/I1zFXdJ74agpoyiPS7QjJpNgDVi', 'admin'),
+
+('Nguyễn An',     'an@example.com',    '0901112222', '$2b$10$tLiaA3Tfpjc4dqMMwFuf2u7oh/I1zFXdJ74agpoyiPS7QjJpNgDVi', 'customer');
+
+
 
 INSERT INTO categories(name, slug) VALUES
 
-('Máy in', 'may-in'), ('Máy photocopy','may-photocopy'), ('Mực in','muc-in');
+('Máy in', 'may-in'), 
+
+('Máy photocopy','may-photocopy'), 
+
+('Mực in','muc-in'),
+
+('Máy hủy giấy','may-huy-giay'),
+
+('Máy tính bàn','may-tinh-ban'),
+
+('Linh kiện máy tính','linh-kien-may-tinh');
+
+
 
 INSERT INTO products(sku, name, brand, monthly_price, deposit_required, stock, description) VALUES
 
-('LBP2900',  'Máy in Canon LBP 2900',  'Canon', 350000, 500000, 10, 'In laser đen trắng, bền bỉ cho văn phòng.'),
+-- Máy in
 
-('RICMP301', 'Photocopy Ricoh MP 301', 'Ricoh', 750000, 1000000, 5, 'Đa chức năng copy/in/scan.'),
+('EPSONL3250', 'Máy in Epson EcoTank L3250', 'Epson', 400000, 600000, 12, 'Máy in phun màu đa năng WiFi.'),
 
-('HP107W',   'Máy in HP Laser 107W',   'HP',    300000, 300000,  8, 'Kết nối WiFi, nhỏ gọn.');
+('BROHL1210W', 'Máy in Brother HL-L1210W', 'Brother', 320000, 400000, 15, 'In laser đen trắng, kết nối không dây.'),
+
+
+
+-- Mực in
+
+('INKC13T00V', 'Mực in Epson 003 Đen', 'Epson', 50000, 50000, 50, 'Mực in chính hãng cho dòng EcoTank.'),
+
+('TONER12A', 'Mực in HP 12A (Q2612A)', 'HP', 80000, 80000, 40, 'Hộp mực laser dành cho máy in HP LaserJet.'),
+
+
+
+-- Máy hủy giấy
+
+('HUYPAPER63C', 'Máy hủy giấy Silicon PS-632C', 'Silicon', 250000, 300000, 8, 'Máy hủy giấy mini cho văn phòng.'),
+
+('HUYRC2210', 'Máy hủy giấy Roco RC-2210', 'Roco', 300000, 350000, 6, 'Hủy vụn siêu nhỏ bảo mật cao.'),
+
+
+
+-- Máy tính bàn
+
+('PCVNGAMING01', 'Máy tính bàn Gaming VN G1', 'VNTech', 1500000, 5000000, 5, 'CPU i5, RAM 16GB, SSD 512GB, GTX 1660.'),
+
+('PCHPVN01', 'Máy tính bàn HP ProDesk 400 G6', 'HP', 1200000, 4500000, 7, 'PC văn phòng bền bỉ, tiết kiệm điện.'),
+
+
+
+-- Máy photocopy
+
+('RICMP2014AD', 'Máy photocopy Ricoh MP 2014AD', 'Ricoh', 900000, 1500000, 4, 'Copy – Scan – In, tốc độ 20 trang/phút.'),
+
+('CANIRADV4035', 'Máy photocopy Canon IR-ADV 4035', 'Canon', 1200000, 2000000, 3, 'Máy photocopy đa chức năng khổ A3.'),
+
+
+
+-- Linh kiện máy tính
+
+('RAM16GDDR4', 'Ram 16GB DDR4 Bus 3200', 'Kingston', 80000, 100000, 30, 'RAM DDR4 hiệu năng cao cho PC.'),
+
+('SSD512GNVME', 'SSD NVMe 512GB PCIe 3.0', 'Samsung', 100000, 150000, 25, 'Ổ cứng SSD NVMe tốc độ cao.');
+
+
+
+
 
 INSERT INTO product_categories(product_id, category_id)
 
 SELECT p.id, c.id FROM products p JOIN categories c ON
 
-  ( (p.sku='LBP2900'  AND c.slug='may-in') OR
+  ( (p.sku IN ('EPSONL3250', 'BROHL1210W') AND c.slug='may-in') OR
 
-    (p.sku='RICMP301' AND c.slug='may-photocopy') OR
+    (p.sku IN ('RICMP2014AD', 'CANIRADV4035') AND c.slug='may-photocopy') OR
 
-    (p.sku='HP107W'   AND c.slug='may-in') );
+    (p.sku IN ('INKC13T00V', 'TONER12A') AND c.slug='muc-in') OR
+
+    (p.sku IN ('HUYPAPER63C', 'HUYRC2210') AND c.slug='may-huy-giay') OR
+
+    (p.sku IN ('PCVNGAMING01', 'PCHPVN01') AND c.slug='may-tinh-ban') OR
+
+    (p.sku IN ('RAM16GDDR4', 'SSD512GNVME') AND c.slug='linh-kien-may-tinh') );
+
+
 
 INSERT INTO product_images(product_id, image_url, sort_order)
 
 SELECT id, CONCAT('/assets/', sku, '.jpg'), 0 FROM products;
+
+
 
 -- View tổng tiền đơn hàng
 
@@ -386,11 +522,19 @@ LEFT JOIN order_items oi ON oi.order_id = o.id
 
 GROUP BY o.id;
 
+
+
+
+
 CREATE INDEX idx_orders_user_status ON orders(user_id, status);
 
 CREATE INDEX idx_products_brand_status ON products(brand, status);
 
 CREATE INDEX idx_carts_user ON carts(user_id);
+
+
+
+
 
 DELIMITER $$
 
@@ -402,13 +546,19 @@ BEGIN
 
   DECLARE v_deposit  INT DEFAULT 0;
 
+
+
   START TRANSACTION;
+
+
 
   INSERT INTO orders(user_id, cart_id, address_id, status, subtotal, deposit, total)
 
   VALUES (p_user_id, p_cart_id, p_address_id, 'pending', 0, 0, 0);
 
   SET p_order_id = LAST_INSERT_ID();
+
+
 
   INSERT INTO order_items(order_id, product_id, qty, price_snapshot)
 
@@ -418,6 +568,8 @@ BEGIN
 
   WHERE ci.cart_id = p_cart_id;
 
+
+
   SELECT IFNULL(SUM(qty * price_snapshot),0) INTO v_subtotal FROM order_items WHERE order_id = p_order_id;
 
   SELECT IFNULL(SUM(p.deposit_required * ci.qty),0) INTO v_deposit
@@ -425,6 +577,8 @@ BEGIN
   FROM cart_items ci JOIN products p ON p.id = ci.product_id
 
   WHERE ci.cart_id = p_cart_id;
+
+
 
   UPDATE orders
 
@@ -436,7 +590,11 @@ BEGIN
 
   WHERE id = p_order_id;
 
+
+
   UPDATE carts SET status = 'converted' WHERE id = p_cart_id;
+
+
 
   COMMIT;
 

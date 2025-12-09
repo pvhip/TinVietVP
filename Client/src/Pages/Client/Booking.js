@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import mayPhotocopyBanner from "../../Assets/Client/Images/may_photocopy_banner.jpg";
 
 export default function Booking() {
   const navigate = useNavigate();
@@ -27,9 +28,9 @@ export default function Booking() {
     // Kiểm tra xem dữ liệu người dùng có tồn tại không và đặt những giá trị đó trước
     if (userData) {
       const user = JSON.parse(userData);
-      setValue("fullname", user.fullname || "");
+      setValue("fullname", user.full_name || user.fullname || "");
       setValue("email", user.email || "");
-      setValue("tel", user.tel || "");
+      setValue("tel", user.phone || user.tel || "");
     }
 
     // Nếu thông tin khách hàng tồn tại, hãy đặt các giá trị đó (điều này có thể ghi đè lên dữ liệu người dùng)
@@ -109,8 +110,28 @@ export default function Booking() {
         </div>
       )}
 
-      <div className="container-fluid p-0 py-5 bg-dark hero-header mb-5">
-        <div className="container text-center my-5 pt-5 pb-4">
+      <div 
+        className="container-fluid p-0 py-5 bg-dark hero-header mb-5"
+        style={{
+          backgroundImage: `url(${mayPhotocopyBanner})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          position: 'relative'
+        }}
+      >
+        <div 
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 1
+          }}
+        ></div>
+        <div className="container text-center my-5 pt-5 pb-4" style={{ position: 'relative', zIndex: 2 }}>
           <h1 className="display-3 text-white mb-3 animated slideInDown">
             Đặt hàng online
           </h1>
@@ -166,7 +187,7 @@ export default function Booking() {
           <div className="col-md-6 bg-dark d-flex align-items-center">
             <div className="p-5 wow fadeInUp" data-wow-delay="0.2s">
               <h5 className="section-title ff-secondary text-start text-primary fw-normal">
-                Đặt chỗ
+                đặt hàng
               </h5>
               <h1 className="text-white mb-4">Điền thông tin khách hàng</h1>
               <form onSubmit={handleSubmit(handleNext)}>

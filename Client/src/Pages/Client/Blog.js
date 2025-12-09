@@ -4,6 +4,7 @@ import { fetchBlog } from '../../Actions/BlogActions';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Spinner from "../../Components/Client/Spinner";
 import CustomPagination from '../../Components/Pagination/CustomPagination';
+import mayPhotocopyBanner from '../../Assets/Client/Images/may_photocopy_banner.jpg';
 
 export default function Blog() {
   const dispatch = useDispatch();
@@ -52,8 +53,28 @@ export default function Blog() {
   return (
     <div>
       {/* Hero Header */}
-      <div className="container-fluid p-0 py-5 bg-dark hero-header mb-5">
-        <div className="text-center my-5 pt-5 pb-4">
+      <div 
+        className="container-fluid p-0 py-5 bg-dark hero-header mb-5"
+        style={{
+          backgroundImage: `url(${mayPhotocopyBanner})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          position: 'relative'
+        }}
+      >
+        <div 
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 1
+          }}
+        ></div>
+        <div className="text-center my-5 pt-5 pb-4" style={{ position: 'relative', zIndex: 2 }}>
           <h1 className="display-3 text-white mb-3 animated slideInDown">
             Tin tức và mẹo hay
           </h1>

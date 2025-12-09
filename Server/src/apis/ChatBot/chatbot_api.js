@@ -46,7 +46,7 @@ const chatbotPatterns = [
         endConversation: false
     },
     {
-        keywords: ['đặt hàng', 'book hàng', 'reservation', 'đặt chỗ', 'giữ chỗ', 'đặt trước', 'book', 'còn hàng'],
+        keywords: ['đặt hàng', 'book hàng', 'reservation', 'đặt hàng', 'giữ chỗ', 'đặt trước', 'book', 'còn hàng'],
         response: "Để đặt hàng, bạn vui lòng cung cấp các thông tin:\n- Ngày giờ dự kiến\n- Số lượng khách\n- Số điện thoại liên hệ\n\nHoặc gọi trực tiếp số 078.546.8567 để được hỗ trợ nhanh nhất.",
         endConversation: false
     },

@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkPassword, updateProfile } from '../../Actions/UserActions';
 import Spinner from '../../Components/Client/Spinner';
+import mayPhotocopyBanner from '../../Assets/Client/Images/may_photocopy_banner.jpg';
 
 import { jwtDecode as jwt_decode } from 'jwt-decode';
 import { DangerAlert, SuccessAlert } from '../../Components/Alert/Alert';
@@ -12,7 +13,7 @@ import AddressSelector from '../../Components/Location/AddressSelector';
 import normalAvatar from '../../Assets/Client/Images/default-avatar.png';
 import { useUser } from '../../Context/UserContext';
 
-import defaultLogo from '../../Assets/Client/Images/logo-ky-thuat.png'
+import defaultLogo from '../../Assets/Client/Images/logo.png'
 import { FetchInfoMembershipCard } from '../../Actions/MembershipActions';
 import { formatDateTime } from '../../Utils/FormatDateTime';
 import { FetchAllListMemberShipTiers, FetchMembershipTier } from '../../Actions/MembershipTiersActions';
@@ -285,8 +286,28 @@ function Account() {
                 <Spinner />
             ) : (
                 <>
-                    <div className="container-fluid p-0 py-5 bg-dark hero-header mb-5">
-                        <div className="container text-center my-5 pt-5 pb-4">
+                    <div 
+                        className="container-fluid p-0 py-5 bg-dark hero-header mb-5"
+                        style={{
+                            backgroundImage: `url(${mayPhotocopyBanner})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            backgroundRepeat: 'no-repeat',
+                            position: 'relative'
+                        }}
+                    >
+                        <div 
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                                zIndex: 1
+                            }}
+                        ></div>
+                        <div className="container text-center my-5 pt-5 pb-4" style={{ position: 'relative', zIndex: 2 }}>
                             <h1 className="display-3 text-white mb-3">Thông Tin Tài Khoản</h1>
                             <nav aria-label="breadcrumb">
                                 <ol className="breadcrumb justify-content-center text-uppercase">

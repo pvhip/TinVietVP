@@ -5,7 +5,7 @@ import { fetchReservationsID } from '../../Actions/MyBookingActions';
 import { fetchReservationdetail } from '../../Actions/ReservationDetailOfTrangActions';
 import Spinner from '../../Components/Client/Spinner';
 import { formatDateTime } from '../../Utils/FormatDateTime';
-import logo from "../../Assets/Client/Images/logo-ky-thuat.png";
+import logo from "../../Assets/Client/Images/logo.png";
 import { jwtDecode as jwt_decode } from 'jwt-decode';
 
 export default function MyBookingDetail() {

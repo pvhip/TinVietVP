@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchListProductCategory,
@@ -12,6 +12,15 @@ import unidecode from "unidecode";
 import { Link, useNavigate } from "react-router-dom";
 import Spinner from "../../Components/Client/Spinner";
 import Pagination from '@mui/material/Pagination';
+import { TextField, InputAdornment, Select, MenuItem, FormControl, InputLabel, Box, Chip } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import GridViewIcon from '@mui/icons-material/GridView';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import { getProductImage } from "../../Components/Client/ImageGallery";
+import mayPhotocopyBanner from "../../Assets/Client/Images/may_photocopy_banner.jpg";
+import mayin01 from "../../Assets/Client/Images/mayin_01.jpg";
+import './Products.css';
 
 export default function Menu() {
   const dispatch = useDispatch();
@@ -20,7 +29,10 @@ export default function Menu() {
   const productState = useSelector((state) => state.product);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 20; //TODO setting limit/trang ở đây
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("name");
+  const [viewMode, setViewMode] = useState("grid"); // "grid" or "list"
+  const productsPerPage = 12;
 
   useEffect(() => {
     console.log('🔄 Fetching product categories and menu...');
@@ -64,31 +76,92 @@ export default function Menu() {
   };
 
 
-  const handleProductClick = (name) => {
+  const handleProductClick = useCallback((name) => {
     const slug = createSlug(name);
     navigate(`/product-detail/${slug}.html`);
-  };
+  }, [navigate]);
 
-  const handleCategoryClick = (categoryId) => {
+  const handleCategoryClick = useCallback((categoryId) => {
     setSelectedCategory(categoryId);
     setCurrentPage(1);
-  };
+  }, []);
 
-  const productsInCategorySelected = selectedCategory
-    ? productState.product.filter((product) => product.categories_id === selectedCategory)
-    : productState.product;
+  // Filter và sort products - Memoized
+  const filteredProducts = useMemo(() => {
+    let filtered = selectedCategory
+      ? productState.product.filter((product) => product.categories_id === selectedCategory)
+      : productState.product;
 
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = productsInCategorySelected.slice(indexOfFirstProduct, indexOfLastProduct);
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+    }
 
-  const totalPages = Math.ceil(productsInCategorySelected.length / productsPerPage);
+    // Sort
+    filtered = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case "name":
+          return a.name.localeCompare(b.name);
+        case "price-low":
+          return (a.price || a.monthly_price || 0) - (b.price || b.monthly_price || 0);
+        case "price-high":
+          return (b.price || b.monthly_price || 0) - (a.price || a.monthly_price || 0);
+        default:
+          return 0;
+      }
+    });
+
+    // Loại bỏ sản phẩm "lươn" nếu có
+    filtered = filtered.filter((product) => {
+      const name = (product.name || '').toLowerCase();
+      return !name.includes('lươn') && !name.includes('luon');
+    });
+
+    return filtered;
+  }, [selectedCategory, searchTerm, sortBy, productState.product]);
+
+  // Memoize pagination calculations
+  const { currentProducts, totalPages } = useMemo(() => {
+    const indexOfLastProduct = currentPage * productsPerPage;
+    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+    const current = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+    const total = Math.ceil(filteredProducts.length / productsPerPage);
+    return { currentProducts: current, totalPages: total };
+  }, [filteredProducts, currentPage, productsPerPage]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, searchTerm, sortBy]);
 
   return (
     <div>
       {/* Tiêu đề */}
-      <div className="py-5 bg-dark hero-header mb-3">
-        <div className="container text-center my-5 pt-5 pb-4">
+      <div 
+        className="py-5 bg-dark hero-header mb-3"
+        style={{
+          backgroundImage: `url(${mayPhotocopyBanner})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          position: 'relative'
+        }}
+      >
+        <div 
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 1
+          }}
+        ></div>
+        <div className="container text-center my-5 pt-5 pb-4" style={{ position: 'relative', zIndex: 2 }}>
           <h1 className="display-3 text-white mb-3 animated slideInDown">
             Sản phẩm
           </h1>
@@ -105,233 +178,453 @@ export default function Menu() {
         </div>
       </div>
 
-      <div className="container-fluid">
-        <div className="row justify-content-center">
-          {/* Sidebar */}
-          <div className="col-lg-3 col-md-4 bg-light" style={{
-            minHeight: '100vh',
-            padding: '20px',
-            boxShadow: '2px 0 5px rgba(0,0,0,0.1)',
-            overflowY: 'auto'
-          }}>
-            <div className="text-center">
-              <h4 className="mb-4 ff-secondary fw-normal section-title" style={{ fontWeight: 'bold', color: '#FEA100' }}>Sản phẩm</h4>
+      <div className="container-fluid py-4 products-container">
+        <div className="row">
+          {/* Sidebar - Categories */}
+          <div className="col-lg-3 col-md-4 mb-4">
+            <div className="category-sidebar">
+              <h4 className="mb-4" style={{ 
+                fontWeight: 'bold', 
+                color: '#FEA100',
+                fontSize: '1.5rem',
+                borderBottom: '2px solid #FEA100',
+                paddingBottom: '12px'
+              }}>
+                <i className="fas fa-th-large me-2"></i>
+                Danh mục
+              </h4>
+              <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+                <div
+                  onClick={() => handleCategoryClick(null)}
+                  className={`category-item ${selectedCategory === null ? 'active' : ''}`}
+                  style={{
+                    backgroundColor: selectedCategory === null ? '#FEA100' : '#f8f9fa',
+                    color: selectedCategory === null ? '#fff' : '#333',
+                    fontWeight: selectedCategory === null ? '600' : '500',
+                  }}
+                >
+                  <i className="fas fa-list me-2"></i>
+                  <span>Tất cả sản phẩm</span>
+                  {selectedCategory === null && (
+                    <Chip 
+                      label={productState.product.length} 
+                      size="small" 
+                      style={{ 
+                        marginLeft: 'auto', 
+                        backgroundColor: '#fff', 
+                        color: '#FEA100',
+                        fontWeight: 'bold'
+                      }} 
+                    />
+                  )}
+                </div>
+                {productCategoryState.product_category.map((item) => {
+                  const count = productState.product.filter(p => p.categories_id === item.id).length;
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => handleCategoryClick(item.id)}
+                      className={`category-item ${selectedCategory === item.id ? 'active' : ''}`}
+                      style={{
+                        backgroundColor: selectedCategory === item.id ? '#FEA100' : '#f8f9fa',
+                        color: selectedCategory === item.id ? '#fff' : '#333',
+                        fontWeight: selectedCategory === item.id ? '600' : '500',
+                      }}
+                    >
+                      <i className="fas fa-folder me-2"></i>
+                      <span>{item.name}</span>
+                      {selectedCategory === item.id && (
+                        <Chip 
+                          label={count} 
+                          size="small" 
+                          style={{ 
+                            marginLeft: 'auto', 
+                            backgroundColor: '#fff', 
+                            color: '#FEA100',
+                            fontWeight: 'bold'
+                          }} 
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            <ul className="list-group">
-              <li className={`list-group-item d-flex align-items-center ${selectedCategory === null ? 'active' : ''}`}
-                style={{ cursor: 'pointer', transition: 'background-color 0.3s', padding: '15px 20px', borderRadius: '8px', marginBottom: '10px' }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#ffd17a'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
-                onClick={() => handleCategoryClick(null)}>
-                <i className="icon-class" style={{ marginRight: '15px', fontSize: '1.5rem', color: '#FEA100' }}></i>
-                <span style={{ fontSize: '1.1rem', color: '#333', fontWeight: '500' }}>Xem tất cả</span>
-              </li>
-              {productCategoryState.product_category.map((item) => (
-                <li className={`list-group-item d-flex align-items-center ${selectedCategory === item.id ? 'active' : ''}`}
-                  key={item.id}
-                  style={{ cursor: 'pointer', transition: 'background-color 0.3s', padding: '15px 20px', borderRadius: '8px', marginBottom: '10px' }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#ffd17a'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'white'}
-                  onClick={() => handleCategoryClick(item.id)}>
-                  <i className="icon-class" style={{ marginRight: '15px', fontSize: '1.5rem', color: '#FEA100' }}></i>
-                  <span style={{ fontSize: '1.1rem', color: '#333', fontWeight: '500' }}>{item.name}</span>
-                </li>
-              ))}
-            </ul>
           </div>
 
-          {/* Nội dung chính - điều chỉnh col và thêm padding */}
-          <div className="col-lg-9 col-md-8" style={{ padding: '20px' }}>
-            {/* Hiển thị loading */}
-            {(productState.loading || productCategoryState.loading) && <Spinner />}
+          {/* Main Content */}
+          <div className="col-lg-9 col-md-8">
+            {/* Search and Filter Bar */}
+            <div style={{
+              backgroundColor: '#fff',
+              borderRadius: '12px',
+              padding: '20px',
+              marginBottom: '24px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}>
+              <div className="row g-3 align-items-center">
+                <div className="col-md-6">
+                  <TextField
+                    fullWidth
+                    placeholder="Tìm kiếm sản phẩm..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon style={{ color: '#FEA100' }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    style={{ backgroundColor: '#f8f9fa' }}
+                  />
+                </div>
+                <div className="col-md-3">
+                  <FormControl fullWidth>
+                    <InputLabel>Sắp xếp</InputLabel>
+                    <Select
+                      value={sortBy}
+                      label="Sắp xếp"
+                      onChange={(e) => setSortBy(e.target.value)}
+                    >
+                      <MenuItem value="name">Tên A-Z</MenuItem>
+                      <MenuItem value="price-low">Giá: Thấp → Cao</MenuItem>
+                      <MenuItem value="price-high">Giá: Cao → Thấp</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="col-md-3 d-flex gap-2">
+                  <Box sx={{ flex: 1, display: 'flex', gap: 1 }}>
+                    <button
+                      onClick={() => setViewMode('grid')}
+                      style={{
+                        flex: 1,
+                        padding: '10px',
+                        border: viewMode === 'grid' ? '2px solid #FEA100' : '1px solid #ddd',
+                        backgroundColor: viewMode === 'grid' ? '#FEA100' : '#fff',
+                        color: viewMode === 'grid' ? '#fff' : '#333',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s'
+                      }}
+                    >
+                      <GridViewIcon />
+                    </button>
+                    <button
+                      onClick={() => setViewMode('list')}
+                      style={{
+                        flex: 1,
+                        padding: '10px',
+                        border: viewMode === 'list' ? '2px solid #FEA100' : '1px solid #ddd',
+                        backgroundColor: viewMode === 'list' ? '#FEA100' : '#fff',
+                        color: viewMode === 'list' ? '#fff' : '#333',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s'
+                      }}
+                    >
+                      <ViewListIcon />
+                    </button>
+                  </Box>
+                </div>
+              </div>
+              {searchTerm && (
+                <div className="mt-3">
+                  <Chip
+                    label={`Tìm thấy ${filteredProducts.length} sản phẩm cho "${searchTerm}"`}
+                    onDelete={() => setSearchTerm("")}
+                    style={{ backgroundColor: '#FEA100', color: '#fff' }}
+                  />
+                </div>
+              )}
+            </div>
 
-            {/* Hiển thị lỗi */}
+            {/* Loading */}
+            {(productState.loading || productCategoryState.loading) && (
+              <div className="text-center py-5">
+                <Spinner />
+              </div>
+            )}
+
+            {/* Error */}
             {(productState.error || productCategoryState.error) && (
-              <div className="alert alert-danger">
+              <div className="alert alert-danger" role="alert">
+                <i className="fas fa-exclamation-circle me-2"></i>
                 Lỗi: {productState.error || productCategoryState.error}
               </div>
             )}
 
-            {/* Hiển thị loading hoặc lỗi */}
-            {productState.loading && <Spinner />}
-            {productState.error && (
-              <div className="alert alert-danger">Lỗi: {productState.error}</div>
-            )}
-
-            {/* Hiển thị danh sách sản phẩm theo danh mục đã chọn */}
-            {!productState.loading && selectedCategory !== null && (
-              <div className="container-xxl py-5">
-                <div className="container">
-                  <div className="text-center wow fadeInUp" data-wow-delay="0.1s">
-                    <h5 className="section-title ff-secondary text-center text-primary fw-normal">
-                      công ty Tin Việt
-                    </h5>
-                    <h1 className="mb-5">{productCategoryState.product_category.find(cat => cat.id === selectedCategory)?.name}</h1>
-                  </div>
-
-                  <div className="tab-class text-center wow fadeInUp" data-wow-delay="0.1s">
-                    <div className="tab-content">
-                      <div id="tab-1" className="tab-pane fade show p-0 active">
-                        <div className="row" style={{ rowGap: "20px" }}>
-                          {currentProducts.length === 0 ? (
-                            <div className="text-center" style={{ marginTop: '20px', fontSize: '1.2rem', color: '#333' }}>
-                              Đang cập nhật thêm sản phẩm...
-                            </div>
-                          ) : (
-                            currentProducts.map((product) => (
-                              <div className="col-lg-6" key={product.id}>
-                                <div
-                                  className="d-flex align-items-center"
-                                  onClick={() => handleProductClick(product.name)}
-                                  style={{ cursor: "pointer" }}
-                                >
-                                  <img
-                                    className="flex-shrink-0 img-fluid rounded"
-                                    src={product.image}
-                                    alt={product.name}
-                                    style={{
-                                      width: "150px",
-                                      height: "150px",
-                                      objectFit: "cover",
-                                      borderRadius: "10px",
-                                    }}
-                                  />
-                                  {product.sale_price > 0 ? (
-                                    <div className="w-100 d-flex flex-column text-start ps-4">
-                                      <h5 className="d-flex justify-content-between border-bottom pb-2">
-                                        <span>{product.name}</span>
-                                        <span className="text-primary" style={{ fontSize: "1rem" }}>
-                                          {formatPrice(product.price - product.sale_price)}
-                                        </span>
-                                      </h5>
-                                      <div className="d-flex justify-content-end">
-                                        <span className="text-secondary text-decoration-line-through" style={{ fontSize: "0.85rem" }}>
-                                          {formatPrice(product.price)}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <div className="w-100 d-flex flex-column text-start ps-4">
-                                      <h5 className="d-flex justify-content-between border-bottom pb-2">
-                                        <span>{product.name}</span>
-                                        <span className="text-primary" style={{ fontSize: "1rem" }}>
-                                          {formatPrice(product.price)}
-                                        </span>
-                                      </h5>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            ))
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Hiển thị tất cả danh mục nếu không có danh mục nào được chọn */}
-            {!productState.loading && selectedCategory === null && (
-              <div>
-                {productCategoryState.product_category.length === 0 ? (
-                  <div className="text-center" style={{ marginTop: '20px', fontSize: '1.2rem', color: '#333' }}>
-                    Đang cập nhật danh mục sản phẩm...
+            {/* Products Display */}
+            {!productState.loading && !productCategoryState.loading && (
+              <>
+                {currentProducts.length === 0 ? (
+                  <div className="text-center py-5" style={{
+                    backgroundColor: '#fff',
+                    borderRadius: '12px',
+                    padding: '60px 20px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                  }}>
+                    <i className="fas fa-box-open" style={{ fontSize: '4rem', color: '#ddd', marginBottom: '20px' }}></i>
+                    <h4 style={{ color: '#666', marginBottom: '10px' }}>Không tìm thấy sản phẩm</h4>
+                    <p style={{ color: '#999' }}>Vui lòng thử lại với từ khóa khác hoặc chọn danh mục khác</p>
                   </div>
                 ) : (
-                  productCategoryState.product_category.map((item) => {
-                    const productsInCategory = productState.product.filter(product => product.categories_id === item.id);
-                    if (productsInCategory.length === 0) return null;
+                  <>
+                    {/* Category Title */}
+                    {selectedCategory && (
+                      <div className="mb-4">
+                        <h2 style={{ 
+                          color: '#333', 
+                          fontWeight: 'bold',
+                          borderLeft: '4px solid #FEA100',
+                          paddingLeft: '16px'
+                        }}>
+                          {productCategoryState.product_category.find(cat => cat.id === selectedCategory)?.name}
+                        </h2>
+                        <p style={{ color: '#666', marginTop: '8px' }}>
+                          Hiển thị {currentProducts.length} / {filteredProducts.length} sản phẩm
+                        </p>
+                      </div>
+                    )}
 
-                    return (
-                      <div className="container-xxl py-5" key={item.id}>
-                        <div className="container">
-                          <div className="text-center wow fadeInUp" data-wow-delay="0.1s">
-                            <h5 className="section-title ff-secondary text-center text-primary fw-normal">
-                              công ty Tin Việt
-                            </h5>
-                            <h1 className="mb-5">{item.name}</h1>
-                          </div>
-
-                          <div className="tab-class text-center wow fadeInUp" data-wow-delay="0.1s">
-                            <div className="tab-content">
-                              <div id="tab-1" className="tab-pane fade show p-0 active">
-                                <div className="row" style={{ rowGap: "20px" }}>
-                                  {productsInCategory.length === 0 ? (
-                                    <div className="col-12 text-center" style={{ marginTop: '20px', fontSize: '1rem', color: '#999' }}>
-                                      Không có sản phẩm trong danh mục này
+                    {/* Grid View */}
+                    {viewMode === 'grid' ? (
+                      <div className="row g-4">
+                        {currentProducts.map((product) => {
+                          const price = product.price || product.monthly_price || 0;
+                          const salePrice = product.sale_price || 0;
+                          const finalPrice = salePrice > 0 ? price - salePrice : price;
+                          
+                          return (
+                            <div className="col-lg-4 col-md-6" key={product.id}>
+                              <div
+                                onClick={() => handleProductClick(product.name)}
+                                className="product-card"
+                              >
+                                <div className="product-image-container">
+                                  <img
+                                    src={getProductImage(product, productCategoryState.product_category)}
+                                    alt={product.name}
+                                    loading="lazy"
+                                    className="product-image"
+                                    onError={(e) => {
+                                      // Nếu ảnh lỗi, dùng ảnh mặc định
+                                      if (e.target.src !== mayin01) {
+                                        e.target.src = mayin01;
+                                      }
+                                    }}
+                                  />
+                                  {salePrice > 0 && (
+                                    <div style={{
+                                      position: 'absolute',
+                                      top: '12px',
+                                      right: '12px',
+                                      backgroundColor: '#ff4444',
+                                      color: '#fff',
+                                      padding: '6px 12px',
+                                      borderRadius: '20px',
+                                      fontSize: '0.85rem',
+                                      fontWeight: 'bold'
+                                    }}>
+                                      -{Math.round((salePrice / price) * 100)}%
                                     </div>
-                                  ) : (
-                                    productsInCategory.map((product) => (
-                                      <div className="col-lg-6" key={product.id}>
-                                        <div
-                                          className="d-flex align-items-center"
-                                          onClick={() => handleProductClick(product.name)}
-                                          style={{ cursor: "pointer", transition: 'transform 0.3s', borderRadius: '8px', padding: '10px' }}
-                                          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
-                                          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                                        >
-                                          <img
-                                            className="flex-shrink-0 img-fluid rounded"
-                                            src={product.image}
-                                            alt={product.name}
-                                            style={{
-                                              width: "150px",
-                                              height: "150px",
-                                              objectFit: "cover",
-                                              borderRadius: "10px",
-                                            }}
-                                          />
-                                          {product.sale_price > 0 ? (
-                                            <div className="w-100 d-flex flex-column text-start ps-4">
-                                              <h5 className="d-flex justify-content-between border-bottom pb-2">
-                                                <span>{product.name}</span>
-                                                <span className="text-primary" style={{ fontSize: "1rem" }}>
-                                                  {formatPrice(product.price - product.sale_price)}
-                                                </span>
-                                              </h5>
-                                              <div className="d-flex justify-content-end">
-                                                <span className="text-secondary text-decoration-line-through" style={{ fontSize: "0.85rem" }}>
-                                                  {formatPrice(product.price)}
-                                                </span>
-                                              </div>
-                                            </div>
-                                          ) : (
-                                            <div className="w-100 d-flex flex-column text-start ps-4">
-                                              <h5 className="d-flex justify-content-between border-bottom pb-2">
-                                                <span>{product.name}</span>
-                                                <span className="text-primary" style={{ fontSize: "1rem" }}>
-                                                  {formatPrice(product.price)}
-                                                </span>
-                                              </h5>
-                                            </div>
-                                          )}
+                                  )}
+                                </div>
+                                <div style={{ padding: '20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                                  <h5 style={{
+                                    fontSize: '1.1rem',
+                                    fontWeight: '600',
+                                    color: '#333',
+                                    marginBottom: '12px',
+                                    minHeight: '50px',
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden'
+                                  }}>
+                                    {product.name}
+                                  </h5>
+                                  {product.description && (
+                                    <p style={{
+                                      fontSize: '0.9rem',
+                                      color: '#666',
+                                      marginBottom: '16px',
+                                      display: '-webkit-box',
+                                      WebkitLineClamp: 2,
+                                      WebkitBoxOrient: 'vertical',
+                                      overflow: 'hidden',
+                                      flex: 1
+                                    }}>
+                                      {product.description}
+                                    </p>
+                                  )}
+                                  <div style={{ marginTop: 'auto' }}>
+                                    {salePrice > 0 ? (
+                                      <div>
+                                        <div style={{
+                                          fontSize: '1.3rem',
+                                          fontWeight: 'bold',
+                                          color: '#FEA100',
+                                          marginBottom: '4px'
+                                        }}>
+                                          {formatPrice(finalPrice)}
+                                        </div>
+                                        <div style={{
+                                          fontSize: '0.9rem',
+                                          color: '#999',
+                                          textDecoration: 'line-through'
+                                        }}>
+                                          {formatPrice(price)}
                                         </div>
                                       </div>
-                                    ))
-                                  )}
+                                    ) : (
+                                      <div style={{
+                                        fontSize: '1.3rem',
+                                        fontWeight: 'bold',
+                                        color: '#FEA100'
+                                      }}>
+                                        {formatPrice(price)}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <button
+                                    className="product-button"
+                                  >
+                                    Xem chi tiết
+                                  </button>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        </div>
+                          );
+                        })}
                       </div>
-                    );
-                  })
+                    ) : (
+                      /* List View */
+                      <div className="row g-3">
+                        {currentProducts.map((product) => {
+                          const price = product.price || product.monthly_price || 0;
+                          const salePrice = product.sale_price || 0;
+                          const finalPrice = salePrice > 0 ? price - salePrice : price;
+                          
+                          return (
+                            <div className="col-12" key={product.id}>
+                              <div
+                                onClick={() => handleProductClick(product.name)}
+                                className="product-card-list"
+                              >
+                                <img
+                                  src={getProductImage(product, productCategoryState.product_category)}
+                                  alt={product.name}
+                                  loading="lazy"
+                                  className="product-image-list"
+                                  onError={(e) => {
+                                    // Nếu ảnh lỗi, dùng ảnh mặc định
+                                    if (e.target.src !== mayin01) {
+                                      e.target.src = mayin01;
+                                    }
+                                  }}
+                                />
+                                <div style={{ flex: 1 }}>
+                                  <h5 style={{
+                                    fontSize: '1.2rem',
+                                    fontWeight: '600',
+                                    color: '#333',
+                                    marginBottom: '8px'
+                                  }}>
+                                    {product.name}
+                                  </h5>
+                                  {product.description && (
+                                    <p style={{
+                                      fontSize: '0.95rem',
+                                      color: '#666',
+                                      marginBottom: '12px',
+                                      display: '-webkit-box',
+                                      WebkitLineClamp: 2,
+                                      WebkitBoxOrient: 'vertical',
+                                      overflow: 'hidden'
+                                    }}>
+                                      {product.description}
+                                    </p>
+                                  )}
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div>
+                                      {salePrice > 0 ? (
+                                        <div>
+                                          <span style={{
+                                            fontSize: '1.4rem',
+                                            fontWeight: 'bold',
+                                            color: '#FEA100',
+                                            marginRight: '12px'
+                                          }}>
+                                            {formatPrice(finalPrice)}
+                                          </span>
+                                          <span style={{
+                                            fontSize: '1rem',
+                                            color: '#999',
+                                            textDecoration: 'line-through'
+                                          }}>
+                                            {formatPrice(price)}
+                                          </span>
+                                        </div>
+                                      ) : (
+                                        <span style={{
+                                          fontSize: '1.4rem',
+                                          fontWeight: 'bold',
+                                          color: '#FEA100'
+                                        }}>
+                                          {formatPrice(price)}
+                                        </span>
+                                      )}
+                                    </div>
+                                    <button
+                                      className="product-button"
+                                      style={{
+                                        width: 'auto',
+                                        padding: '10px 24px',
+                                        marginTop: 0
+                                      }}
+                                    >
+                                      Xem chi tiết
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </>
                 )}
-              </div>
+              </>
             )}
 
-            {/* Hiển thị phân trang nếu có nhiều hơn 10 sản phẩm */}
-            {selectedCategory !== null && totalPages > 1 && (
-              <div className="d-flex justify-content-center align-items-center mt-3">
+            {/* Pagination */}
+            {!productState.loading && totalPages > 1 && (
+              <div className="d-flex justify-content-center align-items-center mt-5 mb-4">
                 <Pagination
                   count={totalPages}
                   page={currentPage}
-                  onChange={(event, value) => setCurrentPage(value)}
+                  onChange={(event, value) => {
+                    setCurrentPage(value);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
                   color="primary"
                   variant="outlined"
+                  shape="rounded"
+                  size="large"
+                  sx={{
+                    '& .MuiPaginationItem-root': {
+                      fontSize: '1rem',
+                      '&.Mui-selected': {
+                        backgroundColor: '#FEA100',
+                        color: '#fff',
+                        '&:hover': {
+                          backgroundColor: '#ffb300',
+                        }
+                      }
+                    }
+                  }}
                 />
               </div>
             )}

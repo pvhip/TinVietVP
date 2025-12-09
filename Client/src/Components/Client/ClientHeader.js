@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useUser } from '../../Context/UserContext';
 import normalAvatar from '../../Assets/Client/Images/default-avatar.png';
+import './ClientHeader.css';
 
 export default function ClientHeader() {
   const { user, setUser } = useUser();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -14,85 +18,178 @@ export default function ClientHeader() {
     }
   }, [setUser]);
 
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setUserDropdownOpen(false);
+  }, [location]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userDropdownOpen && !event.target.closest('.user-dropdown')) {
+        setUserDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [userDropdownOpen]);
+
   const handleLogout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('accessToken');
     navigate('/');
     setUser(null);
+    setUserDropdownOpen(false);
   };
 
   const truncateName = (name, maxLength) => {
+    if (!name) return '';
     return name.length > maxLength ? name.slice(0, maxLength) + '...' : name;
   };
 
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
 
   return (
-    <div>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
-        <NavLink to="/" className="navbar-brand p-0 d-flex align-items-center">
-          <img src="../../Assets/Client/Images/logo-ky-thuat.png" alt="Logo" className="mr-2" />
-          <h3 className="ff-secondary text-start text-primary fw-normal m-0">Tin Việt</h3>
+    <header className="client-header">
+      <div className="header-container">
+        <NavLink to="/" className="header-logo">
+          <img src={require('../../Assets/Client/Images/logo.png')} alt="Logo" />
+          <h3>Tin Việt</h3>
         </NavLink>
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-          <span className="fa fa-bars"></span>
+
+        <button 
+          className="mobile-menu-toggle"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle menu"
+        >
+          <i className="fas fa-bars"></i>
         </button>
-        <div className="collapse navbar-collapse" id="navbarCollapse">
-          <div className="navbar-nav ms-auto py-0 pe-4">
-            <NavLink to="/" className={({ isActive }) => `nav-item nav-link ${isActive ? 'active' : ''}`}>Trang chủ</NavLink>
-            <NavLink to="/menu" className={({ isActive }) => `nav-item nav-link ${isActive ? 'active' : ''}`}>Sản phẩm</NavLink>
-            <NavLink to="/service" className={({ isActive }) => `nav-item nav-link ${isActive ? 'active' : ''}`}>Dịch vụ</NavLink>
-            <NavLink to="/blog" className={({ isActive }) => `nav-item nav-link ${isActive ? 'active' : ''}`}>Tin tức & Mẹo hay</NavLink>
-            <div className="nav-item dropdown">
-              <Link to="#" className="nav-link dropdown-toggle" data-bs-toggle="dropdown">Khác</Link>
-              <div className="dropdown-menu m-0">
-                <NavLink to="/about" className={({ isActive }) => `dropdown-item ${isActive ? 'active' : ''}`}>Về chúng tôi</NavLink>
-                <NavLink to="/contact" className={({ isActive }) => `dropdown-item ${isActive ? 'active' : ''}`}>Liên hệ</NavLink>
-              </div>
+
+        <nav className={`header-nav ${mobileMenuOpen ? 'open' : ''}`}>
+          <NavLink 
+            to="/" 
+            className={`nav-link-item ${isActive('/') ? 'active' : ''}`}
+          >
+            Trang chủ
+          </NavLink>
+          <NavLink 
+            to="/menu" 
+            className={`nav-link-item ${isActive('/menu') ? 'active' : ''}`}
+          >
+            Sản phẩm
+          </NavLink>
+          <NavLink 
+            to="/service" 
+            className={`nav-link-item ${isActive('/service') ? 'active' : ''}`}
+          >
+            Dịch vụ
+          </NavLink>
+          <NavLink 
+            to="/blog" 
+            className={`nav-link-item ${isActive('/blog') ? 'active' : ''}`}
+          >
+            Tin tức & Mẹo hay
+          </NavLink>
+          <div className="nav-dropdown">
+            <button className="nav-dropdown-toggle">
+              Khác
+            </button>
+            <div className="nav-dropdown-menu">
+              <NavLink 
+                to="/about" 
+                className={`dropdown-item-link ${isActive('/about') ? 'active' : ''}`}
+              >
+                Về chúng tôi
+              </NavLink>
+              <NavLink 
+                to="/contact" 
+                className={`dropdown-item-link ${isActive('/contact') ? 'active' : ''}`}
+              >
+                Liên hệ
+              </NavLink>
             </div>
           </div>
-          <NavLink to="/booking" className="btn btn-primary btn-sm rounded py-2 px-4 ms-1 me-1" style={{ color: 'black' }}>
+        </nav>
+
+        <div className="header-actions">
+          <NavLink to="/booking" className="btn-order">
             Đặt hàng
           </NavLink>
           {user ? (
-            <div className="dropdown ms-2">
+            <div 
+              className={`user-dropdown ${userDropdownOpen ? 'show' : ''}`}
+              onMouseEnter={() => setUserDropdownOpen(true)}
+              onMouseLeave={() => setUserDropdownOpen(false)}
+            >
               <button
-                className="btn dropdown-toggle d-flex align-items-center rounded-circle"
+                className="user-avatar-btn"
                 type="button"
-                id="dropdownMenuButton"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-                style={{
-                  backgroundColor: 'rgb(254,161,21)',
-                  border: '1px solid rgb(35,36,50)',
-                  padding: 0,
-                  width: '40px',
-                  height: '40px'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setUserDropdownOpen(!userDropdownOpen);
                 }}
+                onMouseEnter={() => setUserDropdownOpen(true)}
+                aria-label="User menu"
+                aria-expanded={userDropdownOpen}
               >
-                <img
-                  src={user.avatar || normalAvatar}
-                  alt="Avatar"
-                  className="rounded-circle"
-                  style={{ width: '100%', height: '100%' }}
-                  onError={(e) => (e.target.src = normalAvatar)}
-                />
+                {user.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt="Avatar"
+                    onError={(e) => {
+                      e.target.src = normalAvatar;
+                      e.target.onerror = null;
+                    }}
+                  />
+                ) : (
+                  <div className="avatar-placeholder">
+                    <i className="fas fa-user"></i>
+                  </div>
+                )}
               </button>
-              <ul className="dropdown-menu dropdown-menu-end rounded-3" aria-labelledby="dropdownMenuButton">
-                <li className="dropdown-header">
-                  <strong>{truncateName(user.fullname, 15)}</strong>
-                </li>
-                <li><NavLink className={({ isActive }) => `dropdown-item ${isActive ? 'active' : ''}`} to="/account">Thông tin tài khoản</NavLink></li>
-                <li><NavLink className={({ isActive }) => `dropdown-item ${isActive ? 'active' : ''}`} to="/my-bookings">Đơn đặt hàng của tôi</NavLink></li>
-                <li><button className="dropdown-item" onClick={handleLogout}>Đăng xuất</button></li>
-              </ul>
+              <div 
+                className="user-dropdown-menu"
+                onMouseEnter={() => setUserDropdownOpen(true)}
+                onMouseLeave={() => setUserDropdownOpen(false)}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="user-dropdown-header">
+                  {truncateName(user.full_name || user.fullname || 'User', 20)}
+                </div>
+                <NavLink 
+                  to="/account" 
+                  className={`user-dropdown-item ${isActive('/account') ? 'active' : ''}`}
+                  onClick={() => setUserDropdownOpen(false)}
+                >
+                  Thông tin tài khoản
+                </NavLink>
+                <NavLink 
+                  to="/my-bookings" 
+                  className={`user-dropdown-item ${isActive('/my-bookings') ? 'active' : ''}`}
+                  onClick={() => setUserDropdownOpen(false)}
+                >
+                  Đơn đặt hàng của tôi
+                </NavLink>
+                <button 
+                  className="user-dropdown-item" 
+                  onClick={handleLogout}
+                >
+                  Đăng xuất
+                </button>
+              </div>
             </div>
           ) : (
-            <NavLink to="/login" className="btn btn-primary btn-sm rounded py-2 px-4 ms-1" style={{ color: 'black' }}>
-              <i className="fa-solid fa-user"></i> Đăng nhập
+            <NavLink to="/login" className="btn-login">
+              <i className="fa-solid fa-user"></i>
+              Đăng nhập
             </NavLink>
           )}
         </div>
-      </nav>
-    </div>
+      </div>
+    </header>
   )
 }

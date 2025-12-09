@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const connection = require("../../index");
 
-// *Lấy tất cả danh sách đặt chỗ
+// *Lấy tất cả danh sách đặt hàng
 router.get("/", (req, res) => {
   const sql = `
     SELECT tables.id, tables.number, tables.capacity, tables.status, reservations.fullname as guest_name
@@ -19,7 +19,7 @@ router.get("/", (req, res) => {
 });
 
 
-// *Lấy thông tin đặt chỗ theo id
+// *Lấy thông tin đặt hàng theo id
 router.get("/:id", (req, res) => {
   const { id } = req.params;
   const sql = `
@@ -89,7 +89,7 @@ const findAvailableTable = (reservationDate, partySize, callback) => {
     });
 };
 
-// *Thêm đặt chỗ mới
+// *Thêm đặt hàng mới
 router.post("/", (req, res) => {
   const {
     reservation_code,
@@ -182,7 +182,7 @@ router.post("/", (req, res) => {
   });
 });
 
-// // *Thêm đặt chỗ mới
+// // *Thêm đặt hàng mới
 // router.post("/", (req, res) => {
 //   const {
 //     reservation_code,
@@ -329,7 +329,7 @@ router.post("/", (req, res) => {
 //   });
 // });
 
-// *Cập nhật đặt chỗ theo id bằng phương thức put
+// *Cập nhật đặt hàng theo id bằng phương thức put
 router.put("/:id", (req, res) => {
   const { id } = req.params;
   const {
@@ -380,7 +380,7 @@ router.put("/:id", (req, res) => {
   );
 });
 
-// *Cập nhật đặt chỗ theo id bằng phương thức patch
+// *Cập nhật đặt hàng theo id bằng phương thức patch
 router.patch("/:id", (req, res) => {
   const { id } = req.params;
   const updates = req.body;
@@ -400,7 +400,7 @@ router.patch("/:id", (req, res) => {
   });
 });
 
-// *Xóa đặt chỗ theo id
+// *Xóa đặt hàng theo id
 router.delete("/:id", (req, res) => {
   const { id } = req.params;
   const sql = "DELETE FROM reservations WHERE id = ?";

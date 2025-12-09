@@ -1,17 +1,25 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProductHoatDong, fetchProductWithNewDate } from "../../Actions/ProductActions";
+import { fetchListProductCategory } from "../../Actions/ProductCategoryActions";
 import { Link, useNavigate } from "react-router-dom";
-import ImageGallery from "../../Components/Client/ImageGallery";
+import { getProductImage } from "../../Components/Client/ImageGallery";
+import mayPhotocopyBanner from "../../Assets/Client/Images/may_photocopy_banner.jpg";
+import mayin01 from "../../Assets/Client/Images/mayin_01.jpg";
+import mayin02 from "../../Assets/Client/Images/mayin_02.jpg";
+import mayscan01 from "../../Assets/Client/Images/mayscan_01.jpg";
+import mayphoto01 from "../../Assets/Client/Images/mayphoto_01.jpg";
 import unidecode from "unidecode";
 
 function Home() {
   const dispatch = useDispatch();
   const navigate = useNavigate(); // Add useNavigate hook
   const productState = useSelector((state) => state.product);
+  const productCategoryState = useSelector((state) => state.product_category);
 
   useEffect(() => {
     dispatch(fetchProductWithNewDate());
+    dispatch(fetchListProductCategory());
   }, [dispatch]);
 
   const formatPrice = (price) => {
@@ -21,7 +29,8 @@ function Home() {
     }).format(price);
   };
 
-  const products = productState.product.slice(0, 8);
+  // Đảm bảo products là array trước khi slice
+  const products = Array.isArray(productState.product) ? productState.product.slice(0, 8) : [];
 
   // Function to create slug from product name
   const createSlug = (name) => {
@@ -44,7 +53,7 @@ function Home() {
       <div 
         className="container-fluid p-0 py-5 bg-dark hero-header mb-5"
         style={{
-          backgroundImage: `url(${ImageGallery.mayPhotocopyBanner})`,
+          backgroundImage: `url(${mayPhotocopyBanner})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -86,7 +95,7 @@ function Home() {
             <div className="col-lg-6 text-center text-lg-end overflow-hidden">
               <img 
                 className="img-fluid" 
-                src={ImageGallery.mayin01} 
+                src={mayin01} 
                 alt="Hero"
                 style={{
                   transform: 'none',
@@ -103,10 +112,10 @@ function Home() {
         <div className="container">
           <div className="row g-4">
             <div
-              className="col-lg-3 col-sm-6 wow fadeInUp"
+              className="col-lg-3 col-sm-6 wow fadeInUp d-flex"
               data-wow-delay="0.1s"
             >
-              <div className="service-item rounded pt-3">
+              <div className="service-item rounded pt-3 h-100 w-100">
                 <div className="p-4">
                   <i className="fa fa-3x fa-award text-primary mb-4"></i>
                   <h5>Sản phẩm hàng đầu </h5>
@@ -119,10 +128,10 @@ function Home() {
               </div>
             </div>
             <div
-              className="col-lg-3 col-sm-6 wow fadeInUp"
+              className="col-lg-3 col-sm-6 wow fadeInUp d-flex"
               data-wow-delay="0.3s"
             >
-              <div className="service-item rounded pt-3">
+              <div className="service-item rounded pt-3 h-100 w-100">
                 <div className="p-4">
                   <i className="fa fa-3x fa-print text-primary mb-4"></i>
                   <h5>Thiết bị tốt nhất</h5>
@@ -134,10 +143,10 @@ function Home() {
               </div>
             </div>
             <div
-              className="col-lg-3 col-sm-6 wow fadeInUp"
+              className="col-lg-3 col-sm-6 wow fadeInUp d-flex"
               data-wow-delay="0.5s"
             >
-              <div className="service-item rounded pt-3">
+              <div className="service-item rounded pt-3 h-100 w-100">
                 <div className="p-4">
                   <i className="fa fa-3x fa-shopping-cart text-primary mb-4"></i>
                   <h5>Đặt hàng dễ dàng, nhanh chóng</h5>
@@ -149,10 +158,10 @@ function Home() {
               </div>
             </div>
             <div
-              className="col-lg-3 col-sm-6 wow fadeInUp"
+              className="col-lg-3 col-sm-6 wow fadeInUp d-flex"
               data-wow-delay="0.7s"
             >
-              <div className="service-item rounded pt-3">
+              <div className="service-item rounded pt-3 h-100 w-100">
                 <div className="p-4">
                   <i className="fa fa-3x fa-headset text-primary mb-4"></i>
                   <h5>Phục vụ tận tình, xuyên suốt 24/7</h5>
@@ -177,14 +186,14 @@ function Home() {
                   <img
                     className="img-fluid rounded w-100 wow zoomIn"
                     data-wow-delay="0.1s"
-                    src={ImageGallery.mayin01}
+                    src={mayin01}
                   />
                 </div>
                 <div className="col-6 text-start">
                   <img
                     className="img-fluid rounded w-75 wow zoomIn"
                     data-wow-delay="0.3s"
-                    src={ImageGallery.mayin02}
+                    src={mayin02}
                     style={{ marginBottom: "25%" }}
                   />
                 </div>
@@ -192,14 +201,14 @@ function Home() {
                   <img
                     className="img-fluid rounded w-75 wow zoomIn"
                     data-wow-delay="0.5s"
-                    src={ImageGallery.mayscan01}
+                    src={mayscan01}
                   />
                 </div>
                 <div className="col-6 text-end">
                   <img
                     className="img-fluid rounded w-100 wow zoomIn"
                     data-wow-delay="0.7s"
-                    src={ImageGallery.mayphoto01}
+                    src={mayphoto01}
                   />
                 </div>
               </div>
@@ -211,7 +220,7 @@ function Home() {
               <h1 className="mb-4">CHÀO MỪNG ĐẾN VỚI</h1>
               <h1 className="mb-4">
                 <img
-                  src="../../Assets/Client/Images/logo-ky-thuat.png"
+                  src="../../Assets/Client/Images/logo.png"
                   width={50}
                   style={{ marginBottom: "20px" }}
                 ></img>{" "}
@@ -291,7 +300,7 @@ function Home() {
                       >
                         <img
                           className="flex-shrink-0 img-fluid rounded"
-                          src={product.image}
+                          src={getProductImage(product, productCategoryState.product_category || [])}
                           alt={product.name}
                           style={{
                             width: "150px",
@@ -299,42 +308,52 @@ function Home() {
                             objectFit: "cover",
                             borderRadius: "10px",
                           }}
+                          onError={(e) => {
+                            // Nếu ảnh lỗi, dùng ảnh mặc định
+                            if (e.target.src !== mayin01) {
+                              e.target.src = mayin01;
+                            }
+                          }}
                         />
-                        {product.sale_price > 0 ? (
-                          <div className="w-100 d-flex flex-column text-start ps-4">
-                            <h5 className="d-flex justify-content-between border-bottom pb-2">
-                              <span>{product.name}</span>
-                              <span
-                                className="text-primary"
-                                style={{ fontSize: "1rem" }}
-                              >
-                                {formatPrice(
-                                  product.price - product.sale_price
-                                )}
-                              </span>
-                            </h5>
-                            <div className="d-flex justify-content-end">
-                              <span
-                                className="text-secondary text-decoration-line-through"
-                                style={{ fontSize: "0.85rem" }}
-                              >
-                                {formatPrice(product.price)}
-                              </span>
+                        {(() => {
+                          const price = product.price || product.monthly_price || 0;
+                          const salePrice = product.sale_price || 0;
+                          const finalPrice = salePrice > 0 ? price - salePrice : price;
+                          
+                          return salePrice > 0 ? (
+                            <div className="w-100 d-flex flex-column text-start ps-4">
+                              <h5 className="d-flex justify-content-between border-bottom pb-2">
+                                <span>{product.name}</span>
+                                <span
+                                  className="text-primary"
+                                  style={{ fontSize: "1rem", fontWeight: "bold" }}
+                                >
+                                  {formatPrice(finalPrice)}
+                                </span>
+                              </h5>
+                              <div className="d-flex justify-content-end">
+                                <span
+                                  className="text-secondary text-decoration-line-through"
+                                  style={{ fontSize: "0.85rem" }}
+                                >
+                                  {formatPrice(price)}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                        ) : (
-                          <div className="w-100 d-flex flex-column text-start ps-4">
-                            <h5 className="d-flex justify-content-between border-bottom pb-2">
-                              <span>{product.name}</span>
-                              <span
-                                className="text-primary"
-                                style={{ fontSize: "1rem" }}
-                              >
-                                {formatPrice(product.price)}
-                              </span>
-                            </h5>
-                          </div>
-                        )}
+                          ) : (
+                            <div className="w-100 d-flex flex-column text-start ps-4">
+                              <h5 className="d-flex justify-content-between border-bottom pb-2">
+                                <span>{product.name}</span>
+                                <span
+                                  className="text-primary"
+                                  style={{ fontSize: "1rem", fontWeight: "bold" }}
+                                >
+                                  {formatPrice(price)}
+                                </span>
+                              </h5>
+                            </div>
+                          );
+                        })()}
                       </div>
                     </div>
                   ))}

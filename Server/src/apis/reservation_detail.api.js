@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const connection = require('../../index');
 
-// *Lấy tất cả chi tiết đơn đặt chỗ
+// *Lấy tất cả chi tiết đơn đặt hàng
 router.get('/', (req, res) => {
     const sql = 'SELECT * FROM reservation_details';
     connection.query(sql, (err, results) => {
@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
     });
 });
 
-// *Lấy chi tiết đặt chỗ theo id
+// *Lấy chi tiết đặt hàng theo id
 router.get('/:id', (req, res) => {
     const { id } = req.params;
     const sql = 'SELECT * FROM reservation_details WHERE id = ?';
@@ -30,7 +30,7 @@ router.get('/:id', (req, res) => {
     });
 });
 
-// *Thêm chi tiết đặt chỗ mới
+// *Thêm chi tiết đặt hàng mới
 router.post('/', (req, res) => {
     const { reservation_id, product_id, quantity, price } = req.body;
 
@@ -49,7 +49,7 @@ router.post('/', (req, res) => {
     );
 });
 
-// *Cập nhật chi tiết đặt chỗ theo id
+// *Cập nhật chi tiết đặt hàng theo id
 router.put('/:id', (req, res) => {
     const { id } = req.params;
     const { reservation_id, product_id, quantity, price } = req.body;
@@ -72,7 +72,7 @@ router.put('/:id', (req, res) => {
     );
 });
 
-// *Xóa chi tiết đặt chỗ theo id
+// *Xóa chi tiết đặt hàng theo id
 router.delete('/:id', (req, res) => {
     const { id } = req.params;
     const sql = 'DELETE FROM reservation_details WHERE id = ?';

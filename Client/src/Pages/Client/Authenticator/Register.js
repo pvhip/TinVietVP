@@ -99,7 +99,7 @@ export default function Register() {
                         {/* Logo */}
                         <div className="text-center mb-4">
                             <img
-                                src="../../../Assets/Client/Images/logo-ky-thuat.png"
+                                src="../../../Assets/Client/Images/logo.png"
                                 alt="Logo Kỹ Thuật"
                                 className="img-fluid"
                                 style={{ maxWidth: '150px' }}

@@ -468,7 +468,7 @@ router.post("/callback", async (req, res) => {
   // Kiểm tra resultCode từ callback
   if (resultCode === 0) {
     // Giao dịch thành công
-    // Cập nhật trạng thái của đơn đặt chỗ trong bảng reservations
+    // Cập nhật trạng thái của đơn đặt hàng trong bảng reservations
     const newStatus = await updateReservationStatus(orderId);
     return res.status(200).json({ message: `Reservation status updated to ${newStatus}.` });
   } else if (resultCode === 49) {

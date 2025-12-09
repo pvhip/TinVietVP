@@ -1,10 +1,44 @@
 import React from 'react'
+import logoImage from '../../Assets/Client/Images/logo.png';
+import mayPhotocopyBanner from '../../Assets/Client/Images/may_photocopy_banner.jpg';
 
 export default function Service() {
   return (
     <div>
-      <div className="container-fluid py-5 bg-dark hero-header mb-5">
-        <div className="container text-center my-5 pt-5 pb-4">
+      <div 
+        className="container-fluid py-5 bg-dark hero-header mb-5"
+        style={{
+          backgroundImage: `url(${mayPhotocopyBanner})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          position: 'relative'
+        }}
+      >
+        <div 
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 1
+          }}
+        ></div>
+        <div className="container text-center my-5 pt-5 pb-4" style={{ position: 'relative', zIndex: 2 }}>
+          <div className="mb-4">
+            <img 
+              src={logoImage} 
+              alt="Tin Việt Logo" 
+              className="img-fluid"
+              style={{ 
+                maxHeight: '120px', 
+                filter: 'brightness(0) invert(1)',
+                opacity: 0.9
+              }}
+            />
+          </div>
           <h1 className="display-3 text-white mb-3 animated slideInDown">Dịch vụ</h1>
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb justify-content-center text-uppercase">
@@ -25,8 +59,8 @@ export default function Service() {
               <div className="service-item rounded pt-3">
                 <div className="p-4">
                   <i className="fa fa-3x fa-user-tie text-primary mb-4"></i>
-                  <h5>Đầu bếp hàng đầu</h5>
-                  <p>Đội ngũ đầu bếp của chúng tôi là những chuyên gia giàu kinh nghiệm, mang đến những sản phẩm độc đáo và hấp dẫn.</p>
+                  <h5>Sản phẩm hàng đầu</h5>
+                  <p>Sản phẩm của chúng tôi với hơn 5 năm được lưu hành trên thị trường, sẽ luôn mang đến cho quý khách những thiết bị hoàn hảo và chất lượng..</p>
                 </div>
               </div>
             </div>
@@ -34,15 +68,15 @@ export default function Service() {
               <div className="service-item rounded pt-3">
                 <div className="p-4">
                   <i className="fa fa-3x fa-utensils text-primary mb-4"></i>
-                  <h5>Thức ăn chất lượng</h5>
-                  <p>Chúng tôi sử dụng nguyên liệu tươi ngon nhất để đảm bảo mỗi sản phẩm đều đạt chuẩn chất lượng cao nhất.</p>
+                  <h5>Thiết bị tốt nhất</h5>
+                  <p>Mỗi thiết bị tại công ty đều được nhập khẩu từ những nhãn hàng uy tín và có tiếng, đảm bảo chất lượng..</p>
                 </div>
               </div>
             </div>
             <div className="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
               <div className="service-item rounded pt-3">
                 <div className="p-4">
-                  <i class="fa fa-3x fa-solid fa-chair text-primary mb-4"></i>
+                  <i className="fa fa-3x fa-shopping-cart text-primary mb-4"></i>
                   <h5>Đặt hàng trực tuyến</h5>
                   <p>Dễ dàng đặt sản phẩm yêu thích của bạn thông qua hệ thống trực tuyến của chúng tôi, nhanh chóng và tiện lợi.</p>
                 </div>

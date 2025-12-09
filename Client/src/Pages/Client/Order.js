@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchMenu } from "../../Actions/ProductActions";
 import { fetchListProductCategory } from "../../Actions/ProductCategoryActions";
 import { DangerAlert } from "../../Components/Alert/Alert";
+import mayPhotocopyBanner from "../../Assets/Client/Images/may_photocopy_banner.jpg";
 
 export default function Order() {
   const dispatch = useDispatch();
@@ -148,8 +149,28 @@ export default function Order() {
 
   return (
     <div>
-      <div className="container-fluid p-0 py-5 bg-dark hero-header mb-5">
-        <div className="container text-center my-5 pt-5 pb-4">
+      <div 
+        className="container-fluid p-0 py-5 bg-dark hero-header mb-5"
+        style={{
+          backgroundImage: `url(${mayPhotocopyBanner})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          position: 'relative'
+        }}
+      >
+        <div 
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 1
+          }}
+        ></div>
+        <div className="container text-center my-5 pt-5 pb-4" style={{ position: 'relative', zIndex: 2 }}>
           <h1 className="display-3 text-white mb-3 animated slideInDown">
             Đặt hàng online
           </h1>
