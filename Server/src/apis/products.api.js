@@ -374,24 +374,22 @@ router.get('/slug/:slug', (req, res) => {
 });
 
 
-// *Thêm sản phẩm mới
+// *Thêm sản phẩm mới - Cập nhật cho schema mới
 router.post('/', (req, res) => {
-    const { product_code, name, image, price, sale_price, description, status, category_id } = req.body;
+    const { sku, name, description, brand, monthly_price, deposit_required, stock, status, category_id } = req.body;
 
-    if (!product_code) {
-        return res.status(400).json({ error: 'Product_code is required' });
+    // Validation
+    if (!sku) {
+        return res.status(400).json({ error: 'SKU is required' });
     }
     if (!name) {
         return res.status(400).json({ error: 'Name is required' });
     }
-    if (!image) {
-        return res.status(400).json({ error: 'Image is required' });
+    if (!monthly_price) {
+        return res.status(400).json({ error: 'Monthly price is required' });
     }
-    if (!price) {
-        return res.status(400).json({ error: 'Price is required' });
-    }
-    if (!sale_price) {
-        return res.status(400).json({ error: 'Sale_price is required' });
+    if (stock === undefined || stock === null) {
+        return res.status(400).json({ error: 'Stock is required' });
     }
     if (!status) {
         return res.status(400).json({ error: 'Status is required' });
@@ -400,30 +398,154 @@ router.post('/', (req, res) => {
         return res.status(400).json({ error: 'Category_id is required' });
     }
 
-    const sql = 'INSERT INTO products (product_code , name , image , price , sale_price , description , status , categories_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    connection.query(sql, [product_code, name, image, price, sale_price, description, status, category_id], (err, results) => {
+    // Chuyển đổi status: 1 -> 'active', 0 -> 'inactive'
+    const statusValue = status === 1 || status === '1' || status === 'active' ? 'active' : 'inactive';
+    const depositValue = deposit_required || 0;
+    const stockValue = parseInt(stock) || 0;
+    const monthlyPriceValue = parseFloat(monthly_price) || 0;
+
+    // Bắt đầu transaction
+    connection.beginTransaction((err) => {
         if (err) {
-            console.error('Error creating products:', err);
-            return res.status(500).json({ error: 'Failed to create products', customerId: results.insertId });
+            console.error('Error beginning transaction:', err);
+            return res.status(500).json({ error: 'Failed to begin transaction' });
         }
-        res.status(201).json({ message: "Products add new successfully" });
+
+        // Insert vào bảng products
+        const sql = `INSERT INTO products (sku, name, description, brand, monthly_price, deposit_required, stock, status) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+        
+        connection.query(sql, [sku, name, description || '', brand || '', monthlyPriceValue, depositValue, stockValue, statusValue], (err, results) => {
+            if (err) {
+                return connection.rollback(() => {
+                    console.error('Error creating product:', err);
+                    res.status(500).json({ error: 'Failed to create product', details: err.message });
+                });
+            }
+
+            const productId = results.insertId;
+
+            // Insert vào bảng product_categories
+            const categorySql = 'INSERT INTO product_categories (product_id, category_id) VALUES (?, ?)';
+            connection.query(categorySql, [productId, category_id], (err) => {
+                if (err) {
+                    return connection.rollback(() => {
+                        console.error('Error creating product category:', err);
+                        res.status(500).json({ error: 'Failed to create product category', details: err.message });
+                    });
+                }
+
+                // Commit transaction
+                connection.commit((err) => {
+                    if (err) {
+                        return connection.rollback(() => {
+                            console.error('Error committing transaction:', err);
+                            res.status(500).json({ error: 'Failed to commit transaction' });
+                        });
+                    }
+
+                    res.status(201).json({ 
+                        message: "Product added successfully",
+                        productId: productId
+                    });
+                });
+            });
+        });
     });
 });
 
-// *Cập nhật sản phẩm id bằng phương thức put
+// *Cập nhật sản phẩm id bằng phương thức put - Cập nhật cho schema mới
 router.put('/:id', (req, res) => {
-    const { id } = req.params
-    const { product_code, name, image, price, sale_price, description, status, category_id } = req.body;
-    const sql = 'UPDATE products SET product_code = ?, name = ?, image = ?, price = ?, sale_price = ?, description = ?, status = ?, category_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?';
-    connection.query(sql, [product_code, name, image, price, sale_price, description, status, category_id, id], (err, results) => {
+    const { id } = req.params;
+    const { sku, name, description, brand, monthly_price, deposit_required, stock, status, category_id } = req.body;
+
+    // Validation
+    if (!sku) {
+        return res.status(400).json({ error: 'SKU is required' });
+    }
+    if (!name) {
+        return res.status(400).json({ error: 'Name is required' });
+    }
+    if (!monthly_price) {
+        return res.status(400).json({ error: 'Monthly price is required' });
+    }
+    if (stock === undefined || stock === null) {
+        return res.status(400).json({ error: 'Stock is required' });
+    }
+    if (!status) {
+        return res.status(400).json({ error: 'Status is required' });
+    }
+    if (!category_id) {
+        return res.status(400).json({ error: 'Category_id is required' });
+    }
+
+    // Chuyển đổi status: 1 -> 'active', 0 -> 'inactive'
+    const statusValue = status === 1 || status === '1' || status === 'active' ? 'active' : 'inactive';
+    const depositValue = deposit_required || 0;
+    const stockValue = parseInt(stock) || 0;
+    const monthlyPriceValue = parseFloat(monthly_price) || 0;
+
+    // Bắt đầu transaction
+    connection.beginTransaction((err) => {
         if (err) {
-            console.error('Error updating products:', err);
-            return res.status(500).json({ error: 'Failed to update products' });
+            console.error('Error beginning transaction:', err);
+            return res.status(500).json({ error: 'Failed to begin transaction' });
         }
-        if (results.affectedRows === 0) {
-            return res.status(404).json({ error: 'Products not found' });
-        }
-        res.status(200).json({ message: "Products update successfully" });
+
+        // Update bảng products
+        const sql = `UPDATE products 
+                     SET sku = ?, name = ?, description = ?, brand = ?, monthly_price = ?, 
+                         deposit_required = ?, stock = ?, status = ?, updated_at = CURRENT_TIMESTAMP 
+                     WHERE id = ?`;
+        
+        connection.query(sql, [sku, name, description || '', brand || '', monthlyPriceValue, depositValue, stockValue, statusValue, id], (err, results) => {
+            if (err) {
+                return connection.rollback(() => {
+                    console.error('Error updating product:', err);
+                    res.status(500).json({ error: 'Failed to update product', details: err.message });
+                });
+            }
+
+            if (results.affectedRows === 0) {
+                return connection.rollback(() => {
+                    res.status(404).json({ error: 'Product not found' });
+                });
+            }
+
+            // Xóa các category cũ và thêm category mới
+            const deleteCategorySql = 'DELETE FROM product_categories WHERE product_id = ?';
+            connection.query(deleteCategorySql, [id], (err) => {
+                if (err) {
+                    return connection.rollback(() => {
+                        console.error('Error deleting old product categories:', err);
+                        res.status(500).json({ error: 'Failed to update product categories', details: err.message });
+                    });
+                }
+
+                // Insert category mới
+                const categorySql = 'INSERT INTO product_categories (product_id, category_id) VALUES (?, ?)';
+                connection.query(categorySql, [id, category_id], (err) => {
+                    if (err) {
+                        return connection.rollback(() => {
+                            console.error('Error creating product category:', err);
+                            res.status(500).json({ error: 'Failed to update product category', details: err.message });
+                        });
+                    }
+
+                    // Commit transaction
+                    connection.commit((err) => {
+                        if (err) {
+                            return connection.rollback(() => {
+                                console.error('Error committing transaction:', err);
+                                res.status(500).json({ error: 'Failed to commit transaction' });
+                            });
+                        }
+
+                        res.status(200).json({ message: "Product updated successfully" });
+                    });
+                });
+            });
+        });
     });
 });
 
@@ -444,19 +566,56 @@ router.patch('/:id', (req, res) => {
     });
 });
 
-// *Xóa sản phẩm theo id
+// *Xóa sản phẩm theo id - Cập nhật để xóa cả product_categories
 router.delete('/:id', (req, res) => {
     const { id } = req.params;
-    const sql = 'DELETE FROM products WHERE id = ?';
-    connection.query(sql, [id], (err, results) => {
+    
+    // Bắt đầu transaction
+    connection.beginTransaction((err) => {
         if (err) {
-            console.error('Error deleting products:', err);
-            return res.status(500).json({ error: 'Failed to delete products' });
+            console.error('Error beginning transaction:', err);
+            return res.status(500).json({ error: 'Failed to begin transaction' });
         }
-        if (results.affectedRows === 0) {
-            return res.status(404).json({ error: 'Products not found' });
-        }
-        res.status(200).json({ message: 'Products deleted successfully' });
+
+        // Xóa product_categories trước
+        const deleteCategorySql = 'DELETE FROM product_categories WHERE product_id = ?';
+        connection.query(deleteCategorySql, [id], (err) => {
+            if (err) {
+                return connection.rollback(() => {
+                    console.error('Error deleting product categories:', err);
+                    res.status(500).json({ error: 'Failed to delete product categories', details: err.message });
+                });
+            }
+
+            // Xóa product
+            const sql = 'DELETE FROM products WHERE id = ?';
+            connection.query(sql, [id], (err, results) => {
+                if (err) {
+                    return connection.rollback(() => {
+                        console.error('Error deleting product:', err);
+                        res.status(500).json({ error: 'Failed to delete product', details: err.message });
+                    });
+                }
+
+                if (results.affectedRows === 0) {
+                    return connection.rollback(() => {
+                        res.status(404).json({ error: 'Product not found' });
+                    });
+                }
+
+                // Commit transaction
+                connection.commit((err) => {
+                    if (err) {
+                        return connection.rollback(() => {
+                            console.error('Error committing transaction:', err);
+                            res.status(500).json({ error: 'Failed to commit transaction' });
+                        });
+                    }
+
+                    res.status(200).json({ message: 'Product deleted successfully' });
+                });
+            });
+        });
     });
 });
 
