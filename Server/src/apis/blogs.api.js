@@ -5,6 +5,53 @@ const bcrypt = require('bcrypt');
 
 const saltRounds = 10;
 
+// Test endpoint để kiểm tra kết nối database và bảng blogs
+router.get("/test", (req, res) => {
+  const testSql = "SHOW TABLES LIKE 'blogs'";
+  connection.query(testSql, (err, results) => {
+    if (err) {
+      return res.status(500).json({ 
+        error: "Database connection error",
+        details: err.message 
+      });
+    }
+    
+    if (results.length === 0) {
+      return res.status(404).json({ 
+        error: "Table 'blogs' does not exist",
+        hint: "Please run the SQL script to create the blogs table"
+      });
+    }
+    
+    // Kiểm tra cấu trúc bảng
+    connection.query("DESCRIBE blogs", (err, structure) => {
+      if (err) {
+        return res.status(500).json({ 
+          error: "Error describing table",
+          details: err.message 
+        });
+      }
+      
+      // Đếm số bài viết
+      connection.query("SELECT COUNT(*) as count FROM blogs", (err, countResult) => {
+        if (err) {
+          return res.status(500).json({ 
+            error: "Error counting blogs",
+            details: err.message 
+          });
+        }
+        
+        res.status(200).json({
+          message: "Database connection OK",
+          tableExists: true,
+          tableStructure: structure,
+          blogCount: countResult[0].count
+        });
+      });
+    });
+  });
+});
+
 
 // *Lấy tất cả danh sách blog
 router.get('/', (req, res) => {
@@ -65,45 +112,89 @@ router.get('/', (req, res) => {
 
 // Lấy danh sách bài viết với phân trang
 router.get("/posts", (req, res) => {
-  const { page = 1, pageSize = 12} = req.query;
+  try {
+    const { page = 1, pageSize = 12} = req.query;
 
-  const pageNumber = parseInt(page, 10) || 1;
-  const size = parseInt(pageSize, 10) || 12; // Sử dụng giá trị mặc định là 8
-  const offset = (pageNumber - 1) * size;
+    const pageNumber = parseInt(page, 10) || 1;
+    const size = parseInt(pageSize, 10) || 12;
+    const offset = (pageNumber - 1) * size;
 
-  const sqlCount = "SELECT COUNT(*) as total FROM blogs"; // Giả sử bảng bài viết là 'posts'
-
-  const sql = `
-    SELECT * 
-    FROM blogs 
-    ORDER BY created_at DESC -- Hoặc bất kỳ trường nào bạn muốn sắp xếp
-    LIMIT ? OFFSET ?
-  `;
-
-  connection.query(sqlCount, (err, countResults) => {
-    if (err) {
-      console.error("Lỗi khi đếm bài viết:", err);
-      return res.status(500).json({ error: "Không thể đếm bài viết" });
+    // Kiểm tra connection
+    if (!connection) {
+      console.error("❌ Database connection is not available");
+      return res.status(500).json({ 
+        error: "Database connection error",
+        details: "Connection object is null or undefined"
+      });
     }
 
-    const totalCount = countResults[0].total;
-    const totalPages = Math.ceil(totalCount / size);
+    const sqlCount = "SELECT COUNT(*) as total FROM blogs";
 
-    connection.query(sql, [size, offset], (err, results) => {
+    const sql = `
+      SELECT * 
+      FROM blogs 
+      ORDER BY created_at DESC
+      LIMIT ? OFFSET ?
+    `;
+
+    console.log(`📝 Fetching blogs - Page: ${pageNumber}, Size: ${size}, Offset: ${offset}`);
+
+    connection.query(sqlCount, (err, countResults) => {
       if (err) {
-        console.error("Lỗi khi lấy danh sách bài viết:", err);
-        return res.status(500).json({ error: "Không thể lấy danh sách bài viết" });
+        console.error("❌ Lỗi khi đếm bài viết:", err);
+        console.error("Chi tiết lỗi:", err.message);
+        console.error("SQL State:", err.sqlState);
+        console.error("SQL:", sqlCount);
+        console.error("Error code:", err.code);
+        return res.status(500).json({ 
+          error: "Không thể đếm bài viết",
+          details: err.message,
+          sqlState: err.sqlState,
+          code: err.code,
+          hint: "Có thể bảng 'blogs' chưa tồn tại. Hãy chạy file SQL để tạo bảng."
+        });
       }
 
-      res.status(200).json({
-        message: "Hiển thị danh sách bài viết thành công",
-        results,
-        totalCount,
-        totalPages,
-        currentPage: pageNumber,
+      const totalCount = countResults && countResults[0] ? countResults[0].total : 0;
+      const totalPages = totalCount > 0 ? Math.ceil(totalCount / size) : 0;
+
+      console.log(`📊 Total blogs: ${totalCount}, Total pages: ${totalPages}`);
+
+      connection.query(sql, [size, offset], (err, results) => {
+        if (err) {
+          console.error("❌ Lỗi khi lấy danh sách bài viết:", err);
+          console.error("Chi tiết lỗi:", err.message);
+          console.error("SQL State:", err.sqlState);
+          console.error("Error code:", err.code);
+          console.error("SQL:", sql);
+          console.error("Parameters:", [size, offset]);
+          return res.status(500).json({ 
+            error: "Không thể lấy danh sách bài viết",
+            details: err.message,
+            sqlState: err.sqlState,
+            code: err.code,
+            hint: "Có thể bảng 'blogs' chưa tồn tại hoặc có lỗi trong SQL query."
+          });
+        }
+
+        console.log(`✅ Lấy được ${results ? results.length : 0} bài viết, tổng: ${totalCount}`);
+
+        res.status(200).json({
+          message: "Hiển thị danh sách bài viết thành công",
+          results: results || [],
+          totalCount: totalCount,
+          totalPages: totalPages,
+          currentPage: pageNumber,
+        });
       });
     });
-  });
+  } catch (error) {
+    console.error("❌ Unexpected error in /posts endpoint:", error);
+    return res.status(500).json({ 
+      error: "Unexpected server error",
+      details: error.message
+    });
+  }
 });
 
 // *Lấy thông tin blog theo id

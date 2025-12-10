@@ -79,10 +79,40 @@ const DetailBlog = () => {
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
     if (accessToken) {
-      const decodedToken = jwt_decode(accessToken);
-      const userIdFromToken = decodedToken.id;
-      setUserId(userIdFromToken);
-      setIsLoggedIn(true);
+      let userIdFromToken = null;
+      try {
+        // Kiểm tra nếu là mock token
+        if (accessToken.startsWith('mock_token_')) {
+          // Lấy user ID từ user object trong localStorage
+          const storedUser = localStorage.getItem('user');
+          if (storedUser) {
+            const userObj = JSON.parse(storedUser);
+            userIdFromToken = userObj.id;
+          }
+        } else {
+          // Decode JWT token thật
+          const decodedToken = jwt_decode(accessToken);
+          userIdFromToken = decodedToken.id;
+        }
+      } catch (error) {
+        console.error('Error decoding token:', error);
+        // Nếu lỗi, thử lấy từ user object
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          try {
+            const userObj = JSON.parse(storedUser);
+            userIdFromToken = userObj.id;
+          } catch (e) {
+            console.error('Error parsing user:', e);
+          }
+        }
+      }
+      if (userIdFromToken) {
+        setUserId(userIdFromToken);
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
     } else {
       setIsLoggedIn(false);
     }

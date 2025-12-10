@@ -38,7 +38,7 @@ router.get('/', (req, res) => {
     // Tạo phần WHERE của câu query
     const whereClause = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
 
-    // Câu truy vấn đếm tổng số người dùng
+    // Câu truy vấn đếm tổng số lượng sản phẩm dùng
     const sqlCount = `SELECT COUNT(*) as total FROM users ${whereClause}`;
 
     // Câu truy vấn lấy danh sách người dùng

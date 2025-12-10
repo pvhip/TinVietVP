@@ -27,18 +27,6 @@ export default function Service() {
           }}
         ></div>
         <div className="container text-center my-5 pt-5 pb-4" style={{ position: 'relative', zIndex: 2 }}>
-          <div className="mb-4">
-            <img 
-              src={logoImage} 
-              alt="Tin Việt Logo" 
-              className="img-fluid"
-              style={{ 
-                maxHeight: '120px', 
-                filter: 'brightness(0) invert(1)',
-                opacity: 0.9
-              }}
-            />
-          </div>
           <h1 className="display-3 text-white mb-3 animated slideInDown">Dịch vụ</h1>
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb justify-content-center text-uppercase">

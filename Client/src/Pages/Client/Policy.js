@@ -23,13 +23,13 @@ function Policy() {
                             <h3>*Hướng dẫn đặt hàng ăn*</h3>
                             <h3>1. Điền thông tin</h3>
                             <p>Khách hàng chọn vào nút đặt hàng trên giao diện chính.</p>
-                            <p>Điền đầy đủ các thông tin cơ bản để tiện trong quá trình đặt hàng như họ tên, số điện thoại, ngày đặt hàng, số người ăn,... Khi điền đầy đủ thông tin thì ấn vào nút "Tiếp theo" đển chuyển đến trang chọn sản phẩm khi có nhu cầu</p>
+                            <p>Điền đầy đủ các thông tin cơ bản để tiện trong quá trình đặt hàng như họ tên, số điện thoại, ngày đặt hàng, số lượng sản phẩm ăn,... Khi điền đầy đủ thông tin thì ấn vào nút "Tiếp theo" đển chuyển đến trang chọn sản phẩm khi có nhu cầu</p>
                             <p>Khi bạn chỉ muốn điền thông tin để đặt hàng thì ấn vào nút "Hoàn thành đặt hàng" để hoàn thành việc lưu thông tin</p>
                         </div>
                         <div className="mb-4">
                             <h3>2. Chọn sản phẩm</h3>
                             <p>Khách hàng chọn sản phẩm từ danh sách Sản phẩm của công ty, bao gồm các sản phẩmchính, sản phẩmphụ, đồ uống và tráng miệng.</p>
-                            <p>Các sản phẩm được chọn sẽ được ghi nhận trong mục "sản phẩm đã chọn", trong đó hiển thị chi tiết tên món, số lượng, giá từng sản phẩmvà tổng giá của đơn đặt hàng. Khách hàng có thể thay đổi sản phẩm (thêm, bớt món) tại giai đoạn này.</p>
+                            <p>Các sản phẩm được chọn sẽ được ghi nhận trong mục "sản phẩm đã chọn", trong đó hiển thị chi tiết tên sản phẩm, số lượng, giá từng sản phẩmvà tổng giá của đơn đặt hàng. Khách hàng có thể thay đổi sản phẩm (thêm, bớt sản phẩm) tại giai đoạn này.</p>
                         </div>
                         <div className="mb-4">
                             <h3>3. Thanh toán đơn đặt hàng (nếu có)</h3>

@@ -220,7 +220,7 @@ const DetailProduct = () => {
                       <button className="btn btn-primary btn-lg px-5 py-3 mt-3">
                         Đặt hàng ngay
                       </button>
-                    </a>
+</a>
                   </div>
                 </div>
                 <div className="col-lg-12">
@@ -325,7 +325,7 @@ const DetailProduct = () => {
                     <div>
                       <p className="text-primary fs-5 fw-bold mb-0">
                         {formatPrice((product.price || product.monthly_price || 0) - (product.sale_price || 0))}
-                      </p>
+                    </p>
                       {product.sale_price > 0 && (
                         <p className="text-muted text-decoration-line-through mb-0" style={{ fontSize: '0.9rem' }}>
                           {formatPrice(product.price || product.monthly_price || 0)}

@@ -161,7 +161,7 @@ export default function Booking() {
               </div>
               <div className="step">
                 <span className="circle">2</span>
-                <p>Chọn món</p>
+                <p>Chọn sản phẩm</p>
               </div>
               <div className="step">
                 <span className="circle">3</span>
@@ -286,7 +286,7 @@ export default function Booking() {
                           .slice(0, 16)} // Thời gian tối đa là 7 ngày sau hiện tại
                       />
                       <label htmlFor="reservation_date">
-                        Thời gian dùng bữa
+                        Thời gian giao hàng
                       </label>
                       {errors.reservation_date && (
                         <p className="text-danger">
@@ -304,19 +304,19 @@ export default function Booking() {
                         id="party_size"
                         placeholder="Party Size"
                         {...register("party_size", {
-                          required: "Số người ăn là bắt buộc",
+                          required: "số lượng sản phẩm  là bắt buộc",
                           min: {
                             value: 1,
-                            message: "Số người ăn tối thiểu 1 người",
+                            message: "số lượng sản phẩm tối thiểu 1 người",
                           },
                           max: {
                             value: 8,
-                            message: "Số người ăn tối đa 8 người",
+                            message: "số lượng sản phẩm tối đa 8 người",
                           },
                           valueAsNumber: true,
                         })}
                       />
-                      <label htmlFor="party_size">Số người ăn</label>
+                      <label htmlFor="party_size">số lượng sản phẩm ăn</label>
                       {errors.party_size && (
                         <p className="text-danger">
                           {errors.party_size.message}

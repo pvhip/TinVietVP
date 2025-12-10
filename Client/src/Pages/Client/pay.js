@@ -275,8 +275,8 @@ export default function Pay() {
             </div>
             <div className="modal-body">
               <p>
-                <strong>Lưu ý:</strong> Nếu quý khách đến trễ quá 30 phút, nhà
-                hàng sẽ huỷ hàng và không hoàn lại cọc.
+                <strong>Lưu ý:</strong> Quý khách vui lòng để ý điện thoại và nhận hàng theo thời gian đã đặt và thanh toán nốt số tiền còn lại, 
+                nếu không nhận thời gian đã đặt, công ty sẽ không hoàn lại cọc.
               </p>
             </div>
             <div className="modal-footer">
@@ -327,12 +327,12 @@ export default function Pay() {
               <div className="d-flex justify-content-between align-items-center mt-2">
                 <p className="mb-0 fw-bold">Mã đơn: {reservation_code}</p>
                 <p className="mb-0 fw-bold text-end">
-                  Thời gian dùng bữa:{" "}
+                  Thời gian giao hàng:{" "}
                   {formatTime(customerInfo.reservation_date)}
                 </p>
               </div>
               <p className="mb-0 fw-bold">
-                Số người: {customerInfo.party_size} người
+                số lượng sản phẩm: {customerInfo.party_size} người
               </p>
             </div>
           </div>

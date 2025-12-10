@@ -49,7 +49,7 @@ export default function Booking() {
               </div>
               <div className="step">
                 <span className="circle">2</span>
-                <p>Chọn món</p>
+                <p>Chọn sản phẩm</p>
               </div>
               <div className="step">
                 <span className="circle">3</span>

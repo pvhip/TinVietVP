@@ -201,7 +201,7 @@ router.post("/", (req, res) => {
 //   const validTotalAmount = total_amount ? parseFloat(total_amount) : 0;
 //   const deposit = validTotalAmount * 0.3;
 
-//   // Xác định sức chứa hàng cần tìm dựa vào số người
+//   // Xác định sức chứa hàng cần tìm dựa vào số lượng sản phẩm
 //   let requiredCapacity;
 //   if (party_size === 1 || party_size === 2) {
 //     requiredCapacity = 2; // hàng cho 2 người

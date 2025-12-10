@@ -20,10 +20,31 @@ export default function MyBookingDetail() {
         const accessToken = localStorage.getItem('accessToken');
         if (accessToken) {
             try {
+                // Kiểm tra nếu là mock token
+                if (accessToken.startsWith('mock_token_')) {
+                    // Lấy user ID từ user object trong localStorage
+                    const storedUser = localStorage.getItem('user');
+                    if (storedUser) {
+                        const userObj = JSON.parse(storedUser);
+                        return userObj.id;
+                    }
+                    return null;
+                }
+                // Decode JWT token thật
                 const decodedToken = jwt_decode(accessToken);
                 return decodedToken.id; // Trả về user_id từ token
             } catch (error) {
                 console.error('Error decoding token:', error);
+                // Nếu lỗi, thử lấy từ user object
+                const storedUser = localStorage.getItem('user');
+                if (storedUser) {
+                    try {
+                        const userObj = JSON.parse(storedUser);
+                        return userObj.id;
+                    } catch (e) {
+                        console.error('Error parsing user:', e);
+                    }
+                }
                 return null;
             }
         }
@@ -140,7 +161,7 @@ export default function MyBookingDetail() {
                                 <p><strong>Tên:</strong> {reservationState.reservation[0].fullname} | <strong>Mã:</strong> {reservationState.reservation[0].reservation_code ? reservationState.reservation[0].reservation_code : 'Chưa biết'}</p>
                                 <p><strong>Phone:</strong> {reservationState.reservation[0].tel}</p>
                                 <p><strong>Email:</strong> {reservationState.reservation[0].email}</p>
-                                <p><strong>Ngày đặt:</strong> {formatDateTime(reservationState.reservation[0].reservation_date)} | <strong>Số người:</strong> {reservationState.reservation[0].party_size} | <strong>Số hàng:</strong> {(reservationState.reservation[0].tableName && reservationState.reservation[0].status !== 1 && reservationState.reservation[0].status !== 2) ? reservationState.reservation[0].tableName : 'Chưa có'}</p>
+                                <p><strong>Ngày đặt:</strong> {formatDateTime(reservationState.reservation[0].reservation_date)} | <strong>số lượng sản phẩm:</strong> {reservationState.reservation[0].party_size} | <strong>Số hàng:</strong> {(reservationState.reservation[0].tableName && reservationState.reservation[0].status !== 1 && reservationState.reservation[0].status !== 2) ? reservationState.reservation[0].tableName : 'Chưa có'}</p>
                             </div>
 
                             {/* Chi tiết đơn hàng */}
@@ -150,7 +171,7 @@ export default function MyBookingDetail() {
                                     <thead>
                                         <tr>
                                             <th>STT</th>
-                                            <th>Món</th>
+                                            <th>sản phẩm</th>
                                             <th>Số lượng</th>
                                             <th>Giá</th>
                                             <th>Tổng tiền</th>
@@ -170,7 +191,7 @@ export default function MyBookingDetail() {
                                         ) : (
                                             <tr>
                                                 <td colSpan="5" style={{ textAlign: 'center' }}>
-                                                    Khách hàng chưa đặt món!
+                                                    Khách hàng chưa đặt sản phẩm!
                                                 </td>
                                             </tr>
                                         )}

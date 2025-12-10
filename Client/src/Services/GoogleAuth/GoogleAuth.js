@@ -88,11 +88,17 @@ const GoogleAuth = () => {
     };
 
     return (
-        <div className="d-flex justify-content-center align-items-center">
+        <>
             {loading ? (
-                <Spinner />
+                <div className="d-flex justify-content-center align-items-center">
+                    <Spinner />
+                </div>
             ) : (
-                <button className="btn btn-light btn-sm mx-2 d-flex justify-content-center align-items-center" onClick={handleLogin}>
+                <button 
+                    className="btn btn-light btn-sm mx-2 d-flex justify-content-center align-items-center w-100" 
+                    onClick={handleLogin}
+                    type="button"
+                >
                     <img src={logoGoogle} alt="Google Logo" className="google-icon" width={20} height={20} />
                     <span className='mx-2'>Google</span>
                 </button>
@@ -105,7 +111,7 @@ const GoogleAuth = () => {
                 vertical="top"
                 horizontal="right"
             />
-        </div>
+        </>
     );
 };
 

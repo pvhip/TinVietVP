@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getMockBlogs } from "../Utils/MockBlogs";
 
 export const FETCH_BLOG_REQUEST = 'FETCH_BLOG_REQUEST';
 export const FETCH_BLOG_SUCCESS = 'FETCH_BLOG_SUCCESS';
@@ -54,8 +55,16 @@ export const fetchBlog = (page = 1, pageSize = 20) => {
                 dispatch(fetchBlogSuccess(results, totalCount, totalPages, currentPage));
             })
             .catch(error => {
-                const errorMsg = error.message;
-                dispatch(fetchBlogFailure(errorMsg));
+                console.warn('⚠️ API error, using mock data:', error.message);
+                // Sử dụng mock data khi API lỗi
+                const mockBlogs = getMockBlogs();
+                const totalCount = mockBlogs.length;
+                const totalPages = Math.ceil(totalCount / pageSize);
+                const startIndex = (page - 1) * pageSize;
+                const endIndex = startIndex + pageSize;
+                const paginatedBlogs = mockBlogs.slice(startIndex, endIndex);
+
+                dispatch(fetchBlogSuccess(paginatedBlogs, totalCount, totalPages, page));
             });
     };
 };
@@ -74,8 +83,10 @@ export const fetchBlogWithoutPagi = () => {
                 dispatch(fetchBlogSuccess_2(results));
             })
             .catch(error => {
-                const errorMsg = error.message;
-                dispatch(fetchBlogFailure(errorMsg));
+                console.warn('⚠️ API error, using mock data:', error.message);
+                // Sử dụng mock data khi API lỗi
+                const mockBlogs = getMockBlogs();
+                dispatch(fetchBlogSuccess_2(mockBlogs));
             });
     };
 };

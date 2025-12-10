@@ -138,10 +138,20 @@ router.post('/facebook', async (req, res) => {
 // Kiểm tra email tồn tại
 router.get('/check-email', (req, res) => {
     const { email } = req.query;
+    
+    if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+    }
+    
     const checkEmailSql = 'SELECT * FROM users WHERE email = ?';
     connection.query(checkEmailSql, [email], (err, results) => {
         if (err) {
-            return res.status(500).json({ error: 'Database error', details: err });
+            console.error('Database error in check-email:', err);
+            return res.status(500).json({ 
+                error: 'Database error', 
+                message: 'Lỗi khi kiểm tra email. Vui lòng thử lại sau.',
+                details: process.env.NODE_ENV === 'development' ? err.message : undefined
+            });
         }
         if (results.length > 0) {
             res.json({ exists: true, user: results[0] });

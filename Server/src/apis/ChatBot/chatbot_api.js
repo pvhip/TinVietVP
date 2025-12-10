@@ -36,7 +36,7 @@ const chatbotPatterns = [
         endConversation: false
     },
     {
-        keywords: ['menu', 'Sản phẩm', 'sản phẩm', 'máy in', 'có sản phẩmgì', 'sản phẩmnào', 'các món', 'sản phẩmđặc trưng', 'sản phẩmđặc sản', 'specialties'],
+        keywords: ['menu', 'Sản phẩm', 'sản phẩm', 'máy in', 'có sản phẩmgì', 'sản phẩmnào', 'các sản phẩm', 'sản phẩmđặc trưng', 'sản phẩmđặc sản', 'specialties'],
         response: "công ty chúng tôi chuyên về ẩm thực Việt Nam, đặc biệt là các sản phẩmđặc sản miền Tây. Một số sản phẩmtiêu biểu:\n- Cá lóc nướng trui\n- Lẩu mắm\n- Cơm cháy kho quẹt\n- Canh chua cá bông lau\n\nBạn có thể xem menu đầy đủ tại website: http://localhost:3001/menu",
         endConversation: false
     },

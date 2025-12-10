@@ -7,6 +7,7 @@ import { addNewCustomer, checkEmailExists } from "../../../Actions/AuthActions";
 import { DangerAlert, SuccessAlert } from "../../../Components/Alert/Alert";
 import Spinner from "../../../Components/Client/Spinner";
 import AddressSelector from "../../../Components/Location/AddressSelector";
+import logoImage from "../../../Assets/Client/Images/logo.png";
 
 export default function Register() {
     const {
@@ -57,7 +58,17 @@ export default function Register() {
             return true;
         } catch (error) {
             console.error("Error checking email:", error);
-            return false;
+            // Nếu lỗi 500, vẫn cho phép tiếp tục (có thể là lỗi server tạm thời)
+            // Chỉ báo lỗi nếu là lỗi 400 (email đã tồn tại)
+            if (error.response?.status === 400 || error.response?.data?.exists) {
+                setError("email", {
+                    type: "manual",
+                    message: "Email đã tồn tại trên hệ thống",
+                });
+                return false;
+            }
+            // Với lỗi khác, vẫn cho phép tiếp tục (sẽ được kiểm tra lại ở server)
+            return true;
         }
     };
     // *Hàm sử lý chọn địa chỉ
@@ -68,10 +79,16 @@ export default function Register() {
     const onSubmit = async (data) => {
         setLoading(true);
 
-        const emailIsValid = await validateEmailExists(data.email);
-        if (!emailIsValid) {
-            setLoading(false);
-            return; // Nếu email không hợp lệ, dừng lại ở đây
+        // Kiểm tra email (nếu mock mode thì bỏ qua check này vì sẽ check trong mockRegister)
+        try {
+            const emailIsValid = await validateEmailExists(data.email);
+            if (!emailIsValid) {
+                setLoading(false);
+                return; // Nếu email không hợp lệ, dừng lại ở đây
+            }
+        } catch (error) {
+            // Nếu lỗi connection, vẫn cho phép tiếp tục (sẽ check trong mockRegister)
+            console.warn('Email validation error, continuing anyway:', error);
         }
 
         const customerData = {
@@ -82,9 +99,16 @@ export default function Register() {
 
         try {
             await dispatch(addNewCustomer(customerData));
-            navigate("/login"); // Điều hướng đến trang đăng nhập ngay sau khi đăng ký thành công
+            // Kiểm tra xem có lỗi trong state không
+            const user = localStorage.getItem('user');
+            const accessToken = localStorage.getItem('accessToken');
+            if (user && accessToken) {
+                navigate("/login"); // Điều hướng đến trang đăng nhập ngay sau khi đăng ký thành công
+            }
         } catch (error) {
-            console.error("Đăng ký thất bại:", error.message);
+            console.error("Đăng ký thất bại:", error);
+            // Lỗi đã được xử lý trong action và hiển thị alert
+            // Không cần làm gì thêm ở đây
         } finally {
             setLoading(false); // Đặt loading về false sau khi hoàn tất
         }
@@ -99,8 +123,8 @@ export default function Register() {
                         {/* Logo */}
                         <div className="text-center mb-4">
                             <img
-                                src="../../../Assets/Client/Images/logo.png"
-                                alt="Logo Kỹ Thuật"
+                                src={logoImage}
+                                alt="Logo Tin Việt"
                                 className="img-fluid"
                                 style={{ maxWidth: '150px' }}
                             />

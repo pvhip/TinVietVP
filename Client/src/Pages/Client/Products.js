@@ -20,6 +20,24 @@ import ViewListIcon from '@mui/icons-material/ViewList';
 import { getProductImage } from "../../Components/Client/ImageGallery";
 import mayPhotocopyBanner from "../../Assets/Client/Images/may_photocopy_banner.jpg";
 import mayin01 from "../../Assets/Client/Images/mayin_01.jpg";
+// Import tất cả ảnh từ Assets/Client/Images
+import bgHero from "../../Assets/Client/Images/bg-hero.jpg";
+import defaultAvatar from "../../Assets/Client/Images/default-avatar.png";
+import facebook from "../../Assets/Client/Images/facebook.png";
+import google from "../../Assets/Client/Images/google.png";
+import logo from "../../Assets/Client/Images/logo.png";
+import mayhuygiay04 from "../../Assets/Client/Images/mayhuygiay_04.jpg";
+import mayin02 from "../../Assets/Client/Images/mayin_02.jpg";
+import mayin03 from "../../Assets/Client/Images/mayin_03.jpg";
+import mayin04 from "../../Assets/Client/Images/mayin_04.jpg";
+import mayphoto01 from "../../Assets/Client/Images/mayphoto_01.jpg";
+import mayphotocopy03 from "../../Assets/Client/Images/mayphotocopy_03.png";
+import mayphotocopy04 from "../../Assets/Client/Images/mayphotocopy_04.png";
+import mayscan01 from "../../Assets/Client/Images/mayscan_01.jpg";
+import maytinh03 from "../../Assets/Client/Images/maytinh_03.jpg";
+import ssd01 from "../../Assets/Client/Images/SSD_01.jpg";
+import ssd from "../../Assets/Client/Images/SSD.jpg";
+import threeDot from "../../Assets/Client/Images/three-dot.gif";
 import './Products.css';
 
 export default function Menu() {
@@ -63,6 +81,33 @@ export default function Menu() {
       style: "currency",
       currency: "VND",
     }).format(price);
+  };
+
+  // Function để lấy ảnh cụ thể cho từng sản phẩm dựa trên ID
+  const getProductImageById = (productId) => {
+    // Mapping ảnh cho từng sản phẩm theo ID
+    const imageMap = {
+      1: mayin01,        // Máy in Epson EcoTank L3250
+      2: mayin02,        // Máy in Brother HL-L1210W
+      3: mayin03,        // Mực in Epson 003 Đen
+      4: mayin04,        // Mực in HP 12A
+      5: mayhuygiay04,   // Máy hủy giấy Silicon PS-632C
+      6: mayhuygiay04,   // Máy hủy giấy Roco RC-2210
+      7: maytinh03,      // Máy tính bàn Gaming VN G1
+      8: maytinh03,      // Máy tính bàn HP ProDesk 400 G6
+      9: mayphotocopy03, // Máy photocopy Ricoh MP 2014AD
+      10: mayphotocopy04, // Máy photocopy Canon IR-ADV 4035
+      11: ssd01,         // Ram 16GB DDR4
+      12: ssd,           // SSD NVMe 512GB
+    };
+    
+    // Nếu có ảnh trong map, trả về ảnh đó
+    if (imageMap[productId]) {
+      return imageMap[productId];
+    }
+    
+    // Nếu không có, dùng function getProductImage như cũ
+    return null;
   };
 
   // Hàm tạo slug từ tên sản phẩm
@@ -403,10 +448,17 @@ export default function Menu() {
                               >
                                 <div className="product-image-container">
                                   <img
-                                    src={getProductImage(product, productCategoryState.product_category)}
+                                    src={getProductImageById(product.id) || getProductImage(product, productCategoryState.product_category)}
                                     alt={product.name}
                                     loading="lazy"
-                                    className="product-image"
+                                    className={`product-image product-image-${product.id}`}
+                                    data-product-id={product.id}
+                                    style={{
+                                      // Có thể thêm style động dựa trên product.id nếu cần
+                                      objectFit: 'cover',
+                                      width: '100%',
+                                      height: '100%'
+                                    }}
                                     onError={(e) => {
                                       // Nếu ảnh lỗi, dùng ảnh mặc định
                                       if (e.target.src !== mayin01) {
@@ -513,10 +565,16 @@ export default function Menu() {
                                 className="product-card-list"
                               >
                                 <img
-                                  src={getProductImage(product, productCategoryState.product_category)}
+                                  src={getProductImageById(product.id) || getProductImage(product, productCategoryState.product_category)}
                                   alt={product.name}
                                   loading="lazy"
-                                  className="product-image-list"
+                                  className={`product-image-list product-image-list-${product.id}`}
+                                  data-product-id={product.id}
+                                  style={{
+                                    objectFit: 'cover',
+                                    width: '100%',
+                                    height: '100%'
+                                  }}
                                   onError={(e) => {
                                     // Nếu ảnh lỗi, dùng ảnh mặc định
                                     if (e.target.src !== mayin01) {

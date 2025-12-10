@@ -141,9 +141,34 @@ function Account() {
     useEffect(() => {
         const accessToken = localStorage.getItem('accessToken');
         if (accessToken) {
-            const decodedToken = jwt_decode(accessToken);
-            const userIdFromToken = decodedToken.id;
-            setUserId(userIdFromToken);
+            try {
+                // Kiểm tra nếu là mock token
+                if (accessToken.startsWith('mock_token_')) {
+                    // Lấy user ID từ user object trong localStorage
+                    const storedUser = localStorage.getItem('user');
+                    if (storedUser) {
+                        const userObj = JSON.parse(storedUser);
+                        setUserId(userObj.id);
+                    }
+                } else {
+                    // Decode JWT token thật
+                    const decodedToken = jwt_decode(accessToken);
+                    const userIdFromToken = decodedToken.id;
+                    setUserId(userIdFromToken);
+                }
+            } catch (error) {
+                console.error('Error decoding token:', error);
+                // Nếu lỗi, thử lấy từ user object
+                const storedUser = localStorage.getItem('user');
+                if (storedUser) {
+                    try {
+                        const userObj = JSON.parse(storedUser);
+                        setUserId(userObj.id);
+                    } catch (e) {
+                        console.error('Error parsing user:', e);
+                    }
+                }
+            }
 
             const storedProfile = localStorage.getItem('user');
             if (storedProfile) {

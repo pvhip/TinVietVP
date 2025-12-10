@@ -83,10 +83,31 @@ export default function MyBooking() {
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
       try {
+        // Kiểm tra nếu là mock token
+        if (accessToken.startsWith('mock_token_')) {
+          // Lấy user ID từ user object trong localStorage
+          const storedUser = localStorage.getItem('user');
+          if (storedUser) {
+            const userObj = JSON.parse(storedUser);
+            return userObj.id;
+          }
+          return null;
+        }
+        // Decode JWT token thật
         const decodedToken = jwt_decode(accessToken);
         return decodedToken.id; // Trả về user_id từ token
       } catch (error) {
         console.error('Error decoding token:', error);
+        // Nếu lỗi, thử lấy từ user object
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          try {
+            const userObj = JSON.parse(storedUser);
+            return userObj.id;
+          } catch (e) {
+            console.error('Error parsing user:', e);
+          }
+        }
         return null;
       }
     }
@@ -323,7 +344,7 @@ export default function MyBooking() {
                             <strong>Số điện thoại:</strong> {booking.tel}
                           </p>
                           <p className="mb-2">
-                            <strong>Số người:</strong> {booking.party_size}
+                            <strong>số lượng sản phẩm:</strong> {booking.party_size}
                           </p>
                         </div>
                         <div style={{ flex: '1 1 30%' }}>
@@ -381,7 +402,7 @@ export default function MyBooking() {
                       </div>
                       {booking.deposit > booking.total_amount && (
                         <span style={{ fontSize: '12px', color: 'red' }}>
-                          Do bạn đã thanh toán cọc trước khi yêu cầu đổi sản phẩmvà tổng tiền hiện đang nhỏ hơn tiền cọc, khi bạn đến ăn công ty sẽ trả lại bạn.
+                          Do bạn đã thanh toán cọc trước khi yêu cầu đổi sản phẩm và tổng tiền hiện đang nhỏ hơn tiền cọc, khi bạn đến công ty sẽ trả lại bạn.
                         </span>
                       )}
                     </div>

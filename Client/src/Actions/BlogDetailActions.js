@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getMockBlogs } from "../Utils/MockBlogs";
 
 export const FETCH_BLOG_DETAIL_REQUEST = 'FETCH_BLOG_DETAIL_REQUEST';
 export const FETCH_BLOG_DETAIL_SUCCESS = 'FETCH_BLOG_DETAIL_SUCCESS';
@@ -47,8 +48,16 @@ export const fetchBlogDetailBySlug = (slug) => {
                 dispatch(fetchBlogDetailSuccess(blogDetail));
             })
             .catch(error => {
-                const errorMsg = error.message;
-                dispatch(fetchBlogDetailFailure(errorMsg));
+                console.warn('⚠️ API error, using mock data:', error.message);
+                // Sử dụng mock data khi API lỗi
+                const mockBlogs = getMockBlogs();
+                const blogDetail = mockBlogs.find(blog => blog.slug === slug);
+                
+                if (blogDetail) {
+                    dispatch(fetchBlogDetailSuccess(blogDetail));
+                } else {
+                    dispatch(fetchBlogDetailFailure('Blog not found'));
+                }
             });
     };
 };

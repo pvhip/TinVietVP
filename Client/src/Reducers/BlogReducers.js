@@ -25,15 +25,27 @@ const blogReducer = (state = initialState, action) => {
                 loading: true,
             };
         case FETCH_BLOG_SUCCESS:
-            return {
-                ...state,
-                loading: false,
-                allBlog: action.payload.results,
-                totalCount: action.payload.totalCount,
-                totalPages: action.payload.totalPages,
-                currentPage: action.payload.currentPage,
-                blogs: action.payload.results  ? action.payload.results.slice(0, state.pageSize) : [],
-            };
+            // Xử lý cả hai trường hợp: có pagination và không có pagination
+            if (Array.isArray(action.payload)) {
+                // Trường hợp fetchBlogWithoutPagi - payload là mảng trực tiếp
+                return {
+                    ...state,
+                    loading: false,
+                    allBlog: action.payload,
+                    blogs: action.payload.slice(0, state.pageSize),
+                };
+            } else {
+                // Trường hợp fetchBlog - payload có pagination info
+                return {
+                    ...state,
+                    loading: false,
+                    allBlog: action.payload.results || [],
+                    totalCount: action.payload.totalCount || 0,
+                    totalPages: action.payload.totalPages || 0,
+                    currentPage: action.payload.currentPage || 1,
+                    blogs: action.payload.results ? action.payload.results.slice(0, state.pageSize) : [],
+                };
+            }
         case FETCH_BLOG_FAILURE:
             return {
                 ...state,

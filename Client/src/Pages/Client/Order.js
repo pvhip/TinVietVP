@@ -212,7 +212,7 @@ export default function Order() {
               {formatTime(customerInfo.reservation_date)}
             </p>
             <p className="mb-4 text-dark text-start">
-              <strong>Số người:</strong> {customerInfo.party_size} người
+              <strong>số lượng sản phẩm:</strong> {customerInfo.party_size} người
             </p>
             <p className="mb-4 text-dark text-start">
               <strong>Ghi chú:</strong> {customerInfo.note}

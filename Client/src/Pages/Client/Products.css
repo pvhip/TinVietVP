@@ -159,6 +159,54 @@ img[loading="lazy"] {
   content-visibility: auto;
 }
 
+/* ============================================
+   CÁCH CHỈNH ẢNH TỪNG SẢN PHẨM
+   ============================================ */
+
+/* Cách 1: Dùng className động (product-image-{id}) */
+/* Ví dụ: Chỉnh ảnh sản phẩm có ID = 1 */
+.product-image-1 {
+  filter: brightness(1.1);
+  border: 2px solid #FEA100;
+}
+
+/* Ví dụ: Chỉnh ảnh sản phẩm có ID = 2 */
+.product-image-2 {
+  filter: contrast(1.2);
+  transform: scale(1.05);
+}
+
+/* Cách 2: Dùng data attribute selector */
+/* Ví dụ: Chỉnh ảnh sản phẩm có data-product-id = 3 */
+img[data-product-id="3"] {
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(254, 161, 0, 0.3);
+}
+
+/* Cách 3: Dùng CSS với attribute selector kết hợp */
+/* Ví dụ: Chỉnh ảnh sản phẩm trong danh mục cụ thể */
+.product-image-container img.product-image-4 {
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
+}
+
+.product-image-container img.product-image-4:hover {
+  opacity: 1;
+}
+
+/* Cách 4: Dùng nth-child (nếu biết vị trí) */
+/* Lưu ý: Cách này không khuyến nghị vì phụ thuộc vào thứ tự render */
+.product-card:nth-child(1) .product-image {
+  /* Style cho sản phẩm đầu tiên */
+}
+
+/* Cách 5: Dùng CSS variables với inline style (từ JavaScript) */
+/* Trong Products.js, có thể thêm: */
+/* style={{ 
+  '--product-filter': product.id === 1 ? 'grayscale(0.5)' : 'none',
+  filter: 'var(--product-filter)'
+}} */
+
 /* Reduce repaints */
 .product-card,
 .product-card-list,
